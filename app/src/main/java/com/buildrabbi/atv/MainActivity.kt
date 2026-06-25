@@ -14,25 +14,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var keyInput: android.widget.EditText
-private lateinit var loginBtn: android.widget.Button
-private lateinit var progressBar: android.widget.ProgressBar
-
-
+    private lateinit var keyInput: EditText
+    private lateinit var loginBtn: Button
+    private lateinit var progressBar: ProgressBar
 
     private lateinit var database: DatabaseReference
     private var adminWhatsApp: String = ""
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        keyInput = findViewById(R.id.keyInput)
-loginBtn = findViewById(R.id.loginBtn)
-progressBar = findViewById(R.id.progressBar)
-
         setContentView(R.layout.activity_main)
 
-
+        keyInput = findViewById(R.id.keyInput)
+        loginBtn = findViewById(R.id.loginBtn)
+        progressBar = findViewById(R.id.progressBar)
 
         database = FirebaseDatabase.getInstance().reference
 
@@ -67,7 +62,7 @@ progressBar = findViewById(R.id.progressBar)
                     val expiry = snapshot.child("expiry").getValue(String::class.java) ?: ""
 
                     if (status == "paused") {
-                        showPopup("Account Paused ⚠️", "Your account is currently paused by admin.\n\nPlease contact via WhatsApp: " + adminWhatsApp)
+                        showPopup("Account Paused ⚠️", "Your account is currently paused by admin.\n\nPlease contact via WhatsApp: $adminWhatsApp")
                         return
                     }
 
@@ -77,7 +72,7 @@ progressBar = findViewById(R.id.progressBar)
                             val expiryDate = sdf.parse(expiry)
                             val currentDate = Date()
                             if (expiryDate != null && currentDate.after(expiryDate)) {
-                                showPopup("Subscription Expired ❌", "Your access expired on " + expiry + ".\n\nPlease renew via WhatsApp: " + adminWhatsApp)
+                                showPopup("Subscription Expired ❌", "Your access expired on $expiry.\n\nPlease renew via WhatsApp: $adminWhatsApp")
                                 return
                             }
                         } catch (e: Exception) {}
