@@ -3,10 +3,8 @@ package com.buildrabbi.atv
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.*
@@ -16,7 +14,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     private lateinit var keyInput: EditText
     private lateinit var loginBtn: Button
-    private lateinit var progressBar: ProgressBar
+    private lateinit var registerBtn: Button
 
     private lateinit var database: DatabaseReference
     private var adminWhatsApp: String = ""
@@ -25,9 +23,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        keyInput = findViewById(R.id.keyInput)
-        loginBtn = findViewById(R.id.loginBtn)
-        progressBar = findViewById(R.id.progressBar)
+        keyInput = findViewById(R.id.etKey)
+        loginBtn = findViewById(R.id.btnEnter)
+        registerBtn = findViewById(R.id.btnRegister)
 
         database = FirebaseDatabase.getInstance().reference
 
@@ -46,15 +44,17 @@ class MainActivity : AppCompatActivity() {
             }
             checkKey(key)
         }
+
+        registerBtn.setOnClickListener {
+            Toast.makeText(this@MainActivity, "Contact admin to buy a key: $adminWhatsApp", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun checkKey(key: String) {
-        progressBar.visibility = View.VISIBLE
         loginBtn.isEnabled = false
 
         database.child("keys").child(key).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                progressBar.visibility = View.GONE
                 loginBtn.isEnabled = true
 
                 if (snapshot.exists()) {
@@ -88,7 +88,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                progressBar.visibility = View.GONE
                 loginBtn.isEnabled = true
             }
         })
@@ -102,4 +101,4 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("OK", null)
             .show()
     }
-}
+}}
