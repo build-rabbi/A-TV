@@ -21,28 +21,41 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Write google-services.json from secret
-        env:
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: |
-          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
-            echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
-            echo "Using Firebase config from repository secret."
-          else
-            echo "WARNING: GOOGLE_SERVICES_JSON secret not set. Using placeholder."
-          fi
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.6'
 
+      - name: Write google-services.json from secret
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          TARGET_DIR="app"
+          if [ -d "A-TV-Player/app" ]; then
+            TARGET_DIR="A-TV-Player/app"
+          fi
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            echo "$GOOGLE_SERVICES_JSON" > "$TARGET_DIR/google-services.json"
+            echo "Firebase config written to $TARGET_DIR/google-services.json"
+          else
+            echo "No secret found, using existing or placeholder google-services.json"
+          fi
+
       - name: Build Debug APK
-        run: gradle assembleDebug --no-daemon
+        run: |
+          if [ -f "settings.gradle" ]; then
+            gradle assembleDebug --no-daemon
+          elif [ -f "A-TV-Player/settings.gradle" ]; then
+            cd A-TV-Player
+            gradle assembleDebug --no-daemon
+          else
+            echo "ERROR: settings.gradle not found in root or A-TV-Player folder!"
+            exit 1
+          fi
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: A-TV-Player-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: "**/build/outputs/apk/debug/app-debug.apk"
           retention-days: 30
