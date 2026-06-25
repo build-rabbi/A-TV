@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         loginBtn = findViewById(R.id.loginBtn)
         progressBar = findViewById(R.id.progressBar)
 
-        database.child("settings").child("whatsapp").addListenerForSingleValueEvent(object : ValueCallback {
+        database.child("settings").child("whatsapp").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 adminWhatsApp = snapshot.getValue(String::class.java) ?: "Not Set"
             }
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         loginBtn.setOnClickListener {
             val key = keyInput.text.toString().trim()
             if (key.isEmpty()) {
-                Toast.makeText(this, "Please enter your key", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Please enter your key", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             checkKey(key)
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
         loginBtn.isEnabled = false
 
-        database.child("keys").child(key).addListenerForSingleValueEvent(object : ValueCallback {
+        database.child("keys").child(key).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 progressBar.visibility = View.GONE
                 loginBtn.isEnabled = true
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                     val expiry = snapshot.child("expiry").getValue(String::class.java) ?: ""
 
                     if (status == "paused") {
-                        showPopup("Account Paused ⚠️", "Your account is currently paused by admin.\\n\\nPlease contact via WhatsApp: " + adminWhatsApp)
+                        showPopup("Account Paused ⚠️", "Your account is currently paused by admin.\n\nPlease contact via WhatsApp: " + adminWhatsApp)
                         return
                     }
 
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                             val expiryDate = sdf.parse(expiry)
                             val currentDate = Date()
                             if (expiryDate != null && currentDate.after(expiryDate)) {
-                                showPopup("Subscription Expired ❌", "Your access expired on " + expiry + ".\\n\\nPlease renew via WhatsApp: " + adminWhatsApp)
+                                showPopup("Subscription Expired ❌", "Your access expired on " + expiry + ".\n\nPlease renew via WhatsApp: " + adminWhatsApp)
                                 return
                             }
                         } catch (e: Exception) {}
