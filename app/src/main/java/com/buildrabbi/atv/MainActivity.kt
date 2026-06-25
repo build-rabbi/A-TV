@@ -14,20 +14,22 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var keyInput: android.widget.EditText
+    private lateinit var loginBtn: android.widget.Button
+    private lateinit var progressBar: android.widget.ProgressBar
+
     private lateinit var database: DatabaseReference
-    private lateinit var keyInput: EditText
-    private lateinit var loginBtn: Button
-    private lateinit var progressBar: ProgressBar
     private var adminWhatsApp: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        database = FirebaseDatabase.getInstance().reference
         keyInput = findViewById(R.id.keyInput)
         loginBtn = findViewById(R.id.loginBtn)
         progressBar = findViewById(R.id.progressBar)
+
+
+        database = FirebaseDatabase.getInstance().reference
 
         database.child("settings").child("whatsapp").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
