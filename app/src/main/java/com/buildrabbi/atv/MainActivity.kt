@@ -14,19 +14,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var keyInput: android.widget.EditText
-    private lateinit var loginBtn: android.widget.Button
-    private lateinit var progressBar: android.widget.ProgressBar
 
     private lateinit var database: DatabaseReference
     private var adminWhatsApp: String = ""
 
+    private lateinit var keyInput: android.widget.EditText
+    private lateinit var loginBtn: android.widget.Button
+    private lateinit var progressBar: android.widget.ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         keyInput = findViewById(R.id.keyInput)
         loginBtn = findViewById(R.id.loginBtn)
         progressBar = findViewById(R.id.progressBar)
+        setContentView(R.layout.activity_main)
 
 
         database = FirebaseDatabase.getInstance().reference
