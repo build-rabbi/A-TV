@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "745841216934",
+    "project_id": "a-tv-rabbi",
+    "storage_bucket": "a-tv-rabbi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745841216934:android:8e0622bdf38c14052b5367",
+        "android_client_info": {
+          "package_name": "com.buildrabbi.atv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWKyl64IVfeHLguC8aplFfJd8TWiyiDxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
