@@ -25,10 +25,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         keyInput = findViewById(R.id.keyInput)
         loginBtn = findViewById(R.id.loginBtn)
         progressBar = findViewById(R.id.progressBar)
+        setContentView(R.layout.activity_main)
 
 
 
