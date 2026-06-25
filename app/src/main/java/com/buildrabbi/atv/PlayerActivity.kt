@@ -1,39 +1,54 @@
 package com.buildrabbi.atv
 
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
+@OptIn(UnstableApi::class)
 class PlayerActivity : AppCompatActivity() {
 
     private var player: ExoPlayer? = null
     private lateinit var playerView: PlayerView
 
+    companion object {
+        private const val M3U_URL = "https://is.gd/yQuS1g.m3u"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        )
+        setContentView(R.layout.activity_player)
+        playerView = findViewById(R.id.playerView)
+    }
 
-        // ফুল স্ক্রিন প্লেয়ার ভিউ তৈরি
-        playerView = PlayerView(this)
-        setContentView(playerView)
+    override fun onStart() {
+        super.onStart()
+        initPlayer()
+    }
 
-        // এক্সোপ্লেয়ার (ExoPlayer) চালু করা
-        player = ExoPlayer.Builder(this).build()
-        playerView.player = player
-
-        // আপনার দেওয়া ডিফল্ট প্লেলিস্ট/স্ট্রিমিং লিঙ্ক
-        val videoUrl = "https://is.gd/yQuS1g.m3u"
-        val mediaItem = MediaItem.fromUri(videoUrl)
-        
-        player?.setMediaItem(mediaItem)
-        player?.prepare()
-        player?.playWhenReady = true // অটো-প্লে হবে
+    private fun initPlayer() {
+        player = ExoPlayer.Builder(this).build().apply {
+            playerView.player = this
+            setMediaItem(MediaItem.fromUri(M3U_URL))
+            prepare()
+            playWhenReady = true
+        }
     }
 
     override fun onStop() {
         super.onStop()
-        // অ্যাপ ব্যাকগ্রাউন্ডে গেলে প্লেয়ার বন্ধ করা
         player?.release()
         player = null
     }
