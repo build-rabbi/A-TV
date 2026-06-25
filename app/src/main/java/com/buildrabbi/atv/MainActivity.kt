@@ -15,8 +15,9 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var keyInput: android.widget.EditText
-    private lateinit var loginBtn: android.widget.Button
-    private lateinit var progressBar: android.widget.ProgressBar
+private lateinit var loginBtn: android.widget.Button
+private lateinit var progressBar: android.widget.ProgressBar
+
 
 
     private lateinit var database: DatabaseReference
@@ -26,8 +27,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         keyInput = findViewById(R.id.keyInput)
-        loginBtn = findViewById(R.id.loginBtn)
-        progressBar = findViewById(R.id.progressBar)
+loginBtn = findViewById(R.id.loginBtn)
+progressBar = findViewById(R.id.progressBar)
+
         setContentView(R.layout.activity_main)
 
 
