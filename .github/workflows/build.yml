@@ -26,32 +26,57 @@ jobs:
         with:
           gradle-version: '8.6'
 
+      - name: Detect Project Root & Auto-Fix Broken XML
+        run: |
+          if [ -d "A-TV-Player/app" ]; then
+            BASE_DIR="A-TV-Player"
+          else
+            BASE_DIR="."
+          fi
+          echo "PROJECT_BASE=$BASE_DIR" >> $GITHUB_ENV
+          
+          echo "Fixing potentially truncated btn_primary_bg.xml..."
+          cat << 'XML' > "$BASE_DIR/app/src/main/res/drawable/btn_primary_bg.xml"
+          <?xml version="1.0" encoding="utf-8"?>
+          <selector xmlns:android="http://schemas.android.com/apk/res/android">
+              <item android:state_focused="true">
+                  <shape android:shape="rectangle">
+                      <solid android:color="#1976D2" />
+                      <corners android:radius="10dp" />
+                      <stroke android:width="3dp" android:color="#FFFFFF" />
+                  </shape>
+              </item>
+              <item android:state_pressed="true">
+                  <shape android:shape="rectangle">
+                      <solid android:color="#0D47A1" />
+                      <corners android:radius="10dp" />
+                  </shape>
+              </item>
+              <item>
+                  <shape android:shape="rectangle">
+                      <solid android:color="#1565C0" />
+                      <corners android:radius="10dp" />
+                  </shape>
+              </item>
+          </selector>
+          XML
+          echo "File repaired successfully!"
+
       - name: Write google-services.json from secret
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          TARGET_DIR="app"
-          if [ -d "A-TV-Player/app" ]; then
-            TARGET_DIR="A-TV-Player/app"
-          fi
           if [ -n "$GOOGLE_SERVICES_JSON" ]; then
-            echo "$GOOGLE_SERVICES_JSON" > "$TARGET_DIR/google-services.json"
-            echo "Firebase config written to $TARGET_DIR/google-services.json"
+            echo "$GOOGLE_SERVICES_JSON" > "$PROJECT_BASE/app/google-services.json"
+            echo "Firebase config written successfully."
           else
-            echo "No secret found, using existing or placeholder google-services.json"
+            echo "WARNING: GOOGLE_SERVICES_JSON secret not set. Using placeholder."
           fi
 
       - name: Build Debug APK
         run: |
-          if [ -f "settings.gradle" ]; then
-            gradle assembleDebug --no-daemon
-          elif [ -f "A-TV-Player/settings.gradle" ]; then
-            cd A-TV-Player
-            gradle assembleDebug --no-daemon
-          else
-            echo "ERROR: settings.gradle not found in root or A-TV-Player folder!"
-            exit 1
-          fi
+          cd $PROJECT_BASE
+          gradle assembleDebug --no-daemon
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
