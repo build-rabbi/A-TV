@@ -29,6 +29,14 @@ class MainActivity : AppCompatActivity() {
         registerBtn = findViewById(R.id.btnRegister)
         database = FirebaseDatabase.getInstance().reference
 
+        // Auto login if key saved
+        val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
+        val savedKey = prefs.getString("saved_key", null)
+        if (savedKey != null) {
+            keyInput.setText(savedKey)
+            checkKey(savedKey)
+        }
+
         database.child("settings").child("whatsapp").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 adminWhatsApp = snapshot.getValue(String::class.java) ?: ""
@@ -69,6 +77,7 @@ class MainActivity : AppCompatActivity() {
                 loginBtn.text = "ENTER"
 
                 if (!snapshot.exists()) {
+                    getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().remove("saved_key").apply()
                     showPopup("Invalid Key ❌", "This key is not valid.\n\nContact admin:\n$adminWhatsApp")
                     return
                 }
@@ -81,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                     contentResolver, android.provider.Settings.Secure.ANDROID_ID)
 
                 if (status == "paused") {
+                    getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().remove("saved_key").apply()
                     showRenewPopup("Account Paused ⚠️", "Your account is paused.\n\nContact via WhatsApp:")
                     return
                 }
@@ -90,6 +100,7 @@ class MainActivity : AppCompatActivity() {
                         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                         val expiryDate = sdf.parse(expiry)
                         if (expiryDate != null && Date().after(expiryDate)) {
+                            getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().remove("saved_key").apply()
                             showRenewPopup("Subscription Expired ❌", "Expired on $expiry.\n\nRenew via WhatsApp:")
                             return
                         }
@@ -102,6 +113,9 @@ class MainActivity : AppCompatActivity() {
                     showPopup("Device Locked 🔒", "This key is active on another device.\n\nContact admin:\n$adminWhatsApp")
                     return
                 }
+
+                // Save key for auto login
+                getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().putString("saved_key", key).apply()
 
                 val greeting = if (userName.isNotEmpty()) "Welcome, $userName!" else "Login Successful"
                 Toast.makeText(this@MainActivity, greeting, Toast.LENGTH_SHORT).show()
