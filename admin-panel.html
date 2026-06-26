@@ -428,9 +428,7 @@ function renderKeysTable(entries) {
           <button class="dot-btn" onclick="window.toggleDotMenu(event,'menu-${k}')">⋮</button>
           <div class="dot-dropdown" id="menu-${k}">
             <div class="dot-option info" onclick="window.closeDotMenus();window.showInfo('${k}')">ℹ️ Info</div>
-            ${v.status==='paused'
-              ? `<div class="dot-option resume" onclick="window.closeDotMenus();window.togglePause('${k}','active')">▶️ Resume</div>`
-              : `<div class="dot-option pause" onclick="window.closeDotMenus();window.togglePause('${k}','paused')">⏸️ Pause</div>`}
+            <div class="dot-option ${v.status==='paused'?'resume':'pause'}" onclick="window.closeDotMenus();window.togglePause('${k}','${v.status==='paused'?'active':'paused'}')">${v.status==='paused'?'▶️ Resume':'⏸️ Pause'}</div>
             <div class="dot-option delete" onclick="window.closeDotMenus();window.openDeleteModal('${k}')">🗑️ Delete</div>
           </div>
         </div>
