@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "firebase_url": "https://your-project-id-default-rtdb.firebaseio.com",
-    "project_id": "your-project-id",
-    "storage_bucket": "your-project-id.appspot.com"
+    "project_number": "745841216934",
+    "firebase_url": "https://a-tv-rabbi-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "a-tv-rabbi",
+    "storage_bucket": "a-tv-rabbi.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:abcdef1234567890abcd",
+        "mobilesdk_app_id": "1:745841216934:android:9a6c0f8d8d494ef22b5367",
         "android_client_info": {
           "package_name": "com.buildrabbi.atv"
         }
       },
       "api_key": [
         {
-          "current_key": "AIzaSyD-placeholder-replace-with-real-key"
+          "current_key": "AIzaSyBJk6zKmIhly-RnlP5ZgjksgEIE3_jfyMc"
         }
       ],
       "services": {
