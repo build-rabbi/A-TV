@@ -114,8 +114,12 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
 
-                // Save key for auto login
-                getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().putString("saved_key", key).apply()
+                // Save key + user info for auto login and profile
+                getSharedPreferences("atv_prefs", MODE_PRIVATE).edit()
+                    .putString("saved_key", key)
+                    .putString("user_name", userName)
+                    .putString("expiry", expiry)
+                    .apply()
 
                 val greeting = if (userName.isNotEmpty()) "Welcome, $userName!" else "Login Successful"
                 Toast.makeText(this@MainActivity, greeting, Toast.LENGTH_SHORT).show()

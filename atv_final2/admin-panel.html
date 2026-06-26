@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>A-TV Admin Panel</title>
+<style>
+:root{
+  --bg:#080B10;--surface:#0E1318;--surface2:#141A22;--border:#1E2830;
+  --accent:#00C2FF;--danger:#FF4D4D;--warn:#FFB800;--success:#00E676;
+  --text:#E8EDF2;--muted:#5A6A7A;--font:'Segoe UI',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;
+  background:radial-gradient(ellipse at 50% 0%,#001a2e 0%,var(--bg) 70%);}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:40px 32px;width:100%;max-width:380px;text-align:center;}
+.login-box .logo{font-size:32px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-bottom:4px;}
+.login-box .sub{color:var(--muted);font-size:13px;margin-bottom:32px;}
+.login-box input{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-size:15px;margin-bottom:12px;outline:none;transition:border-color .2s;}
+.login-box input:focus{border-color:var(--accent);}
+.btn-primary{width:100%;padding:14px;background:var(--accent);color:#000;font-weight:700;
+  font-size:15px;border:none;border-radius:10px;cursor:pointer;}
+#loginErr{color:var(--danger);font-size:13px;margin-top:12px;min-height:18px;}
+.topbar{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--surface);
+  border-bottom:1px solid var(--border);z-index:200;align-items:center;padding:0 16px;gap:12px;}
+.topbar .brand{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:2px;flex:1;}
+.hamburger{background:none;border:none;color:var(--text);cursor:pointer;padding:4px;}
+#app{display:none;min-height:100vh;}
+.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:var(--surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;z-index:150;transition:transform .25s;}
+.sidebar .brand{padding:0 24px 28px;font-size:20px;font-weight:800;color:var(--accent);letter-spacing:2px;}
+.nav-item{padding:13px 24px;cursor:pointer;color:var(--muted);font-size:14px;
+  display:flex;align-items:center;gap:10px;transition:all .15s;border-left:3px solid transparent;}
+.nav-item:hover{color:var(--text);background:var(--surface2);}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--surface2);}
+.sidebar-footer{margin-top:auto;padding:16px 24px;}
+.logout-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--border);
+  color:var(--muted);border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s;}
+.logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:140;}
+.main{margin-left:220px;padding:32px;}
+.page{display:none;}.page.active{display:block;}
+.page-title{font-size:22px;font-weight:700;margin-bottom:24px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;}
+.stat-label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.stat-value{font-size:30px;font-weight:800;}
+.stat-value.blue{color:var(--accent);}.stat-value.green{color:var(--success);}
+.stat-value.red{color:var(--danger);}.stat-value.yellow{color:var(--warn);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:15px;font-weight:600;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:500px;}
+th{padding:11px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;
+  color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid #0d1117;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.active{background:#00E67622;color:var(--success);}
+.badge.paused{background:#FFB80022;color:var(--warn);}
+.badge.expired{background:#FF4D4D22;color:var(--danger);}
+.dot-menu-wrap{position:relative;display:inline-block;}
+.dot-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:6px;font-size:20px;line-height:1;transition:all .15s;}
+.dot-btn:hover{background:var(--surface2);color:var(--text);}
+.dot-dropdown{position:absolute;right:0;top:100%;background:#0E1318;border:1px solid var(--border);border-radius:10px;min-width:150px;z-index:500;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);overflow:hidden;}
+.dot-dropdown.open{display:block;}
+.dot-option{padding:11px 16px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;white-space:nowrap;}
+.dot-option:hover{background:var(--surface2);}
+.dot-option.info{color:var(--accent);}
+.dot-option.pause{color:var(--warn);}
+.dot-option.resume{color:var(--success);}
+.dot-option.delete{color:var(--danger);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.form-group input,.form-group select{padding:12px 14px;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s;width:100%;}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);}
+.form-group select option{background:var(--surface);}
+.form-actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;}
+.btn-create{padding:12px 28px;background:var(--accent);color:#000;font-weight:700;
+  font-size:14px;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;}
+.btn-create:hover{opacity:.85;}
+.btn-create:disabled{opacity:.5;cursor:not-allowed;}
+.btn-secondary{padding:12px 20px;background:transparent;color:var(--muted);
+  font-size:14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;}
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:24px;max-width:480px;margin-bottom:20px;}
+.settings-card h3{font-size:15px;font-weight:600;margin-bottom:20px;}
+.btn-save{padding:11px 24px;background:var(--accent);color:#000;font-weight:700;
+  font-size:14px;border:none;border-radius:8px;cursor:pointer;margin-top:16px;}
+.search-row{display:flex;gap:12px;margin-bottom:16px;}
+.search-input{flex:1;padding:10px 14px;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:var(--accent);}
+#toast{position:fixed;bottom:24px;right:24px;padding:14px 20px;border-radius:10px;
+  font-size:14px;font-weight:500;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+#toast.success{background:#00E676;color:#000;}
+#toast.error{background:#FF4D4D;color:#fff;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;
+  display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:28px;width:100%;max-width:420px;}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:16px;}
+.modal-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;}
+.btn-confirm-delete{padding:10px 20px;background:var(--danger);color:#fff;font-weight:700;font-size:14px;border:none;border-radius:8px;cursor:pointer;}
+.btn-cancel{padding:10px 20px;background:transparent;color:var(--muted);font-size:14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;}
+/* INFO MODAL */
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.info-row:last-child{border-bottom:none;}
+.info-label{color:var(--muted);font-size:12px;}
+.info-value{color:var(--text);font-weight:500;text-align:right;max-width:60%;word-break:break-all;}
+.info-key-val{font-family:monospace;color:var(--accent);font-size:13px;}
+.empty-state{text-align:center;padding:48px;color:var(--muted);}
+.loading{text-align:center;padding:32px;color:var(--muted);font-size:14px;}
+/* RESET DEVICE BTN */
+.btn-reset-device{padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:#7B61FF22;color:#7B61FF;}
+@media(max-width:768px){
+  .topbar{display:flex;}
+  .sidebar{transform:translateX(-100%);top:0;padding-top:72px;}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar .brand{display:none;}
+  .overlay.open{display:block;}
+  .main{margin-left:0;padding:16px;padding-top:72px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .stat-card{padding:16px;}
+  .stat-value{font-size:24px;}
+  .form-grid{grid-template-columns:1fr;}
+  .page-title{font-size:18px;}
+  .settings-card{max-width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">A-TV</div>
+    <div class="sub">Admin Panel</div>
+    <input type="email" id="adminEmail" placeholder="Admin Email"/>
+    <input type="password" id="adminPass" placeholder="Password"/>
+    <button class="btn-primary" onclick="adminLogin()">Sign In</button>
+    <div id="loginErr"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="brand">A-TV</div>
+  </div>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="brand">A-TV</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('keys',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3"/></svg>Keys
+    </div>
+    <div class="nav-item" onclick="showPage('create',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Create Key
+    </div>
+    <div class="nav-item" onclick="showPage('settings',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>Settings
+    </div>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="adminLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Keys</div><div class="stat-value blue" id="stat-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value green" id="stat-active">—</div></div>
+        <div class="stat-card"><div class="stat-label">Paused</div><div class="stat-value yellow" id="stat-paused">—</div></div>
+        <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-value red" id="stat-expired">—</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Recent Keys</h3></div>
+        <div class="table-wrap" id="recent-keys"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- KEYS -->
+    <div class="page" id="page-keys">
+      <div class="page-title">All Keys</div>
+      <div class="search-row">
+        <input class="search-input" id="searchInput" placeholder="Search by key, user, or phone..." oninput="filterKeys()"/>
+      </div>
+      <div class="card">
+        <div class="table-wrap" id="all-keys"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- CREATE KEY -->
+    <div class="page" id="page-create">
+      <div class="page-title">Create Key</div>
+      <div class="card" style="padding:24px;max-width:620px;">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Key (blank = auto-generate)</label>
+            <input type="text" id="keyVal" placeholder="e.g. ATVRH-XXXX"/>
+          </div>
+          <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" id="keyUser" placeholder="Full name"/>
+          </div>
+          <div class="form-group">
+            <label>Customer Phone / WhatsApp</label>
+            <input type="text" id="keyPhone" placeholder="+8801XXXXXXXXX"/>
+          </div>
+          <div class="form-group">
+            <label>Duration Preset</label>
+            <select id="keyDuration" onchange="setDuration()">
+              <option value="">Custom date below</option>
+              <option value="7">7 Days</option>
+              <option value="30">1 Month</option>
+              <option value="90">3 Months</option>
+              <option value="180">6 Months</option>
+              <option value="365">1 Year</option>
+              <option value="0">No Limit</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="date" id="keyExpiry"/>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="keyStatus">
+              <option value="active">Active</option>
+              <option value="paused">Paused</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-create" id="createBtn" onclick="createKey()">Create Key</button>
+          <button class="btn-secondary" onclick="resetForm()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-title">Settings</div>
+      <div class="settings-card">
+        <h3>Admin WhatsApp</h3>
+        <div class="form-group">
+          <label>WhatsApp Number</label>
+          <input type="text" id="waNumber" placeholder="+8801XXXXXXXXX"/>
+        </div>
+        <button class="btn-save" onclick="saveWhatsApp()">Save</button>
+      </div>
+      <div class="settings-card">
+        <h3>Change Password</h3>
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="newPass" placeholder="Min 6 characters"/>
+        </div>
+        <button class="btn-save" onclick="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INFO MODAL -->
+<div class="modal-overlay" id="infoModal">
+  <div class="modal">
+    <h3>Key Information</h3>
+    <div id="infoContent"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeInfoModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3>Delete Key</h3>
+    <p id="deleteModalText" style="color:var(--muted);font-size:14px;margin-bottom:8px;">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-confirm-delete" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, updatePassword, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, remove, update, onValue }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBJk6zKmIhly-RnlP5ZgjksgEIE3_jfyMc",
+  authDomain: "a-tv-rabbi.firebaseapp.com",
+  databaseURL: "https://a-tv-rabbi-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "a-tv-rabbi",
+  storageBucket: "a-tv-rabbi.firebasestorage.app",
+  messagingSenderId: "745841216934",
+  appId: "1:745841216934:web:9a6c0f8d8d494ef22b5367",
+  measurementId: "G-3DK61DVGE7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+let allKeysData = {};
+let deleteKeyPending = null;
+let infoKeyPending = null;
+
+window.toggleSidebar = () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+};
+window.closeSidebar = () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+};
+
+window.adminLogin = async () => {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  document.getElementById('loginErr').textContent = '';
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) { document.getElementById('loginErr').textContent = 'Invalid email or password.'; }
+};
+
+window.adminLogout = async () => { await signOut(auth); };
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadDashboard(); loadAllKeys(); loadSettings();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+window.showPage = (page, el) => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  el.classList.add('active');
+  closeSidebar();
+};
+
+function getBadge(v) {
+  if (v.status === 'paused') return 'paused';
+  if (v.expiry && v.expiry !== 'No Limit') {
+    const today = new Date(); today.setHours(0,0,0,0);
+    if (new Date(v.expiry) < today) return 'expired';
+  }
+  return 'active';
+}
+
+function loadDashboard() {
+  onValue(ref(db,'keys'), snap => {
+    const data = snap.val() || {};
+    allKeysData = data;
+    const keys = Object.entries(data);
+    const today = new Date(); today.setHours(0,0,0,0);
+    let active=0, paused=0, expired=0;
+    keys.forEach(([k,v]) => {
+      if (v.status==='paused'){paused++;return;}
+      if (v.expiry && v.expiry!=='No Limit' && new Date(v.expiry)<today){expired++;return;}
+      active++;
+    });
+    document.getElementById('stat-total').textContent = keys.length;
+    document.getElementById('stat-active').textContent = active;
+    document.getElementById('stat-paused').textContent = paused;
+    document.getElementById('stat-expired').textContent = expired;
+    const recent = keys.slice(-5).reverse();
+    const rows = recent.map(([k,v]) => `<tr>
+      <td style="font-family:monospace;color:var(--accent);font-size:12px">${k}</td>
+      <td>${v.user||'—'}</td>
+      <td>${v.phone||'—'}</td>
+      <td>${v.expiry||'No Limit'}</td>
+      <td><span class="badge ${getBadge(v)}">${getBadge(v)}</span></td>
+    </tr>`).join('');
+    document.getElementById('recent-keys').innerHTML = `<table>
+      <thead><tr><th>Key</th><th>User</th><th>Phone</th><th>Expiry</th><th>Status</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="5" class="empty-state">No keys yet</td></tr>'}</tbody>
+    </table>`;
+  });
+}
+
+function loadAllKeys() {
+  onValue(ref(db,'keys'), snap => {
+    allKeysData = snap.val() || {};
+    renderKeysTable(Object.entries(allKeysData));
+  });
+}
+
+function renderKeysTable(entries) {
+  if (!entries.length) {
+    document.getElementById('all-keys').innerHTML = '<div class="empty-state">No keys found.</div>';
+    return;
+  }
+  const rows = entries.map(([k,v]) => {
+    const badge = getBadge(v);
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:var(--accent)">${k}</td>
+      <td>${v.user||'—'}</td>
+      <td>${v.phone||'—'}</td>
+      <td>${v.expiry||'No Limit'}</td>
+      <td><span class="badge ${badge}">${badge}</span></td>
+      <td>
+        <div class="dot-menu-wrap">
+          <button class="dot-btn" onclick="window.toggleDotMenu(event,'menu-${k}')">⋮</button>
+          <div class="dot-dropdown" id="menu-${k}">
+            <div class="dot-option info" onclick="window.closeDotMenus();window.showInfo('${k}')">ℹ️ Info</div>
+            <div class="dot-option ${v.status==='paused'?'resume':'pause'}" onclick="window.closeDotMenus();window.togglePause('${k}','${v.status==='paused'?'active':'paused'}')">${v.status==='paused'?'▶️ Resume':'⏸️ Pause'}</div>
+            <div class="dot-option delete" onclick="window.closeDotMenus();window.openDeleteModal('${k}')">🗑️ Delete</div>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('all-keys').innerHTML = `<table>
+    <thead><tr><th>Key</th><th>User</th><th>Phone</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+window.filterKeys = () => {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = Object.entries(allKeysData).filter(([k,v]) =>
+    k.toLowerCase().includes(q)||(v.user||'').toLowerCase().includes(q)||(v.phone||'').includes(q));
+  renderKeysTable(filtered);
+};
+
+window.togglePause = async (key, newStatus) => {
+  await update(ref(db,`keys/${key}`), {status: newStatus});
+  showToast(`Key ${newStatus==='paused'?'paused':'resumed'}`, 'success');
+};
+
+// INFO MODAL
+window.showInfo = (key) => {
+  infoKeyPending = key;
+  const v = allKeysData[key] || {};
+  const badge = getBadge(v);
+  document.getElementById('infoContent').innerHTML = `
+    <div class="info-row"><span class="info-label">Key</span><span class="info-value info-key-val">${key}</span></div>
+    <div class="info-row"><span class="info-label">Customer Name</span><span class="info-value">${v.user||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Phone / WhatsApp</span><span class="info-value">${v.phone||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="badge ${badge}">${badge}</span></span></div>
+    <div class="info-row"><span class="info-label">Expiry</span><span class="info-value">${v.expiry||'No Limit'}</span></div>
+    <div class="info-row"><span class="info-label">Created</span><span class="info-value">${v.createdAt||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Device ID</span><span class="info-value" style="font-size:11px;font-family:monospace">${v.deviceId||'Not logged in yet'}</span></div>
+    ${v.deviceId ? `<div style="margin-top:12px"><button class="btn-reset-device" onclick="window.resetDevice('${key}')">🔄 Reset Device Lock</button></div>` : ''}
+  `;
+  document.getElementById('infoModal').classList.add('open');
+};
+window.closeInfoModal = () => document.getElementById('infoModal').classList.remove('open');
+
+window.resetDevice = async (key) => {
+  await update(ref(db,`keys/${key}`), {deviceId: ''});
+  showToast('Device lock reset', 'success');
+  window.showInfo(key);
+};
+
+// DELETE
+window.openDeleteModal = (key) => {
+  deleteKeyPending = key;
+  document.getElementById('deleteModalText').textContent = `Delete key "${key}"? This cannot be undone.`;
+  document.getElementById('deleteModal').classList.add('open');
+};
+window.closeDeleteModal = () => {
+  deleteKeyPending = null;
+  document.getElementById('deleteModal').classList.remove('open');
+};
+window.confirmDelete = async () => {
+  if (!deleteKeyPending) return;
+  await remove(ref(db,`keys/${deleteKeyPending}`));
+  showToast('Key deleted','success');
+  closeDeleteModal();
+};
+
+// CREATE
+window.setDuration = () => {
+  const val = document.getElementById('keyDuration').value;
+  if (val === '0') { document.getElementById('keyExpiry').value = ''; return; }
+  if (!val) return;
+  const d = new Date();
+  d.setDate(d.getDate() + parseInt(val));
+  document.getElementById('keyExpiry').value = d.toISOString().split('T')[0];
+};
+
+window.createKey = async () => {
+  const btn = document.getElementById('createBtn');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    let key = document.getElementById('keyVal').value.trim();
+    if (!key) key = 'ATVRH-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    const user = document.getElementById('keyUser').value.trim();
+    const phone = document.getElementById('keyPhone').value.trim();
+    const expiryInput = document.getElementById('keyExpiry').value;
+    const duration = document.getElementById('keyDuration').value;
+    const status = document.getElementById('keyStatus').value;
+    const expiry = duration === '0' ? 'No Limit' : (expiryInput || 'No Limit');
+    const existing = await get(ref(db, `keys/${key}`));
+    if (existing.exists()) { showToast('Key already exists!','error'); return; }
+    await set(ref(db, `keys/${key}`), {
+      user: user || 'Unknown',
+      phone: phone || '',
+      expiry, status, deviceId: '',
+      createdAt: new Date().toISOString().split('T')[0]
+    });
+    showToast(`Key "${key}" created!`, 'success');
+    resetForm();
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Key';
+  }
+};
+
+window.resetForm = () => {
+  ['keyVal','keyUser','keyPhone','keyExpiry'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('keyDuration').value='';
+  document.getElementById('keyStatus').value='active';
+};
+
+function loadSettings() {
+  get(ref(db,'settings/whatsapp')).then(snap => {
+    if (snap.exists()) document.getElementById('waNumber').value = snap.val();
+  });
+}
+
+window.saveWhatsApp = async () => {
+  const num = document.getElementById('waNumber').value.trim();
+  if (!num) { showToast('Enter a number','error'); return; }
+  await set(ref(db,'settings/whatsapp'), num);
+  showToast('Saved','success');
+};
+
+window.changePassword = async () => {
+  const pass = document.getElementById('newPass').value;
+  if (pass.length < 6) { showToast('Min 6 characters','error'); return; }
+  try {
+    await updatePassword(auth.currentUser, pass);
+    showToast('Password updated','success');
+    document.getElementById('newPass').value='';
+  } catch(e) { showToast('Re-login required','error'); }
+};
+
+
+window.toggleDotMenu = (e, id) => {
+  e.stopPropagation();
+  const isOpen = document.getElementById(id).classList.contains('open');
+  window.closeDotMenus();
+  if (!isOpen) document.getElementById(id).classList.add('open');
+};
+window.closeDotMenus = () => {
+  document.querySelectorAll('.dot-dropdown').forEach(d => d.classList.remove('open'));
+};
+document.addEventListener('click', window.closeDotMenus);
+
+window.showToast = (msg, type) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = type; t.style.display = 'block';
+  setTimeout(() => t.style.display='none', 3000);
+};
+</script>
+</body>
+</html>
