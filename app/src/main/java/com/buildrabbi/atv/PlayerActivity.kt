@@ -17,7 +17,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var playerView: PlayerView
 
     companion object {
-        private const val M3U_URL = "https://is.gd/yQuS1g.m3u"
+        private const val M3U_URL = "https://raw.githubusercontent.com/bugsfreeweb/LiveTVCollector/refs/heads/main/LiveTV/Bangladesh/LiveTV.m3u"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
