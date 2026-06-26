@@ -4,13 +4,11 @@
     android:layout_height="match_parent"
     android:background="#080B10">
 
-    <!-- Background gradient overlay -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_gradient" />
+        android:background="@drawable/bg_gradient"/>
 
-    <!-- Center card -->
     <LinearLayout
         android:layout_width="480dp"
         android:layout_height="wrap_content"
@@ -19,17 +17,14 @@
         android:background="@drawable/card_bg"
         android:padding="48dp">
 
-        <!-- Logo -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <!-- LOGO IMAGE -->
+        <ImageView
+            android:layout_width="160dp"
+            android:layout_height="80dp"
             android:layout_gravity="center"
-            android:text="A-TV"
-            android:textColor="#00C2FF"
-            android:textSize="52sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.15"
-            android:layout_marginBottom="6dp" />
+            android:src="@mipmap/ic_launcher"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="16dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,9 +34,8 @@
             android:textColor="#5A6A7A"
             android:textSize="14sp"
             android:letterSpacing="0.05"
-            android:layout_marginBottom="48dp" />
+            android:layout_marginBottom="48dp"/>
 
-        <!-- Key label -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,9 +43,8 @@
             android:textColor="#5A6A7A"
             android:textSize="11sp"
             android:letterSpacing="0.15"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"/>
 
-        <!-- Key input -->
         <EditText
             android:id="@+id/etKey"
             android:layout_width="match_parent"
@@ -68,9 +61,8 @@
             android:fontFamily="monospace"
             android:focusable="true"
             android:nextFocusDown="@id/btnEnter"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Enter button -->
         <Button
             android:id="@+id/btnEnter"
             android:layout_width="match_parent"
@@ -84,9 +76,8 @@
             android:textSize="15sp"
             android:textStyle="bold"
             android:letterSpacing="0.12"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="12dp"/>
 
-        <!-- Register button -->
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
@@ -97,11 +88,10 @@
             android:text="BUY / REGISTER KEY"
             android:textColor="#00C2FF"
             android:textSize="14sp"
-            android:letterSpacing="0.06" />
+            android:letterSpacing="0.06"/>
 
     </LinearLayout>
 
-    <!-- Bottom info -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -110,6 +100,6 @@
         android:layout_marginBottom="24dp"
         android:text="© A-TV Premium — All rights reserved"
         android:textColor="#2A3A4A"
-        android:textSize="11sp" />
+        android:textSize="11sp"/>
 
 </RelativeLayout>
