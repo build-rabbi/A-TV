@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,7 +18,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginBtn: Button
     private lateinit var registerBtn: Button
     private lateinit var database: DatabaseReference
-    private lateinit var auth: FirebaseAuth
     private var adminWhatsApp: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,12 +28,6 @@ class MainActivity : AppCompatActivity() {
         loginBtn = findViewById(R.id.btnEnter)
         registerBtn = findViewById(R.id.btnRegister)
         database = FirebaseDatabase.getInstance().reference
-        auth = FirebaseAuth.getInstance()
-
-        // Sign in anonymously so app can write deviceId
-        if (auth.currentUser == null) {
-            auth.signInAnonymously()
-        }
 
         database.child("settings").child("whatsapp").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -63,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         registerBtn.setOnClickListener {
-            showPopup("Buy Access Key", "Contact admin on WhatsApp to purchase a key.\n\n$adminWhatsApp")
+            showPopup("Buy Access Key", "Contact admin on WhatsApp:\n\n$adminWhatsApp")
         }
     }
 
@@ -71,78 +63,64 @@ class MainActivity : AppCompatActivity() {
         loginBtn.isEnabled = false
         loginBtn.text = "Checking..."
 
-        // Ensure anonymous auth before DB call
-        fun doCheck() {
-            database.child("keys").child(key).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    loginBtn.isEnabled = true
-                    loginBtn.text = "ENTER"
+        database.child("keys").child(key).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                loginBtn.isEnabled = true
+                loginBtn.text = "ENTER"
 
-                    if (!snapshot.exists()) {
-                        showPopup("Invalid Key ❌", "This access key is not valid.\n\nContact admin:\n$adminWhatsApp")
-                        return
-                    }
-
-                    val status = snapshot.child("status").getValue(String::class.java) ?: "active"
-                    val expiry = snapshot.child("expiry").getValue(String::class.java) ?: "No Limit"
-                    val userName = snapshot.child("user").getValue(String::class.java) ?: ""
-                    val deviceId = snapshot.child("deviceId").getValue(String::class.java) ?: ""
-                    val myDeviceId = android.provider.Settings.Secure.getString(
-                        contentResolver, android.provider.Settings.Secure.ANDROID_ID)
-
-                    if (status == "paused") {
-                        showRenewPopup("Account Paused ⚠️", "Your account has been paused.\n\nContact via WhatsApp:")
-                        return
-                    }
-
-                    if (expiry != "No Limit" && expiry.isNotEmpty()) {
-                        try {
-                            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                            val expiryDate = sdf.parse(expiry)
-                            if (expiryDate != null && Date().after(expiryDate)) {
-                                showRenewPopup("Subscription Expired ❌", "Your key expired on $expiry.\n\nRenew via WhatsApp:")
-                                return
-                            }
-                        } catch (e: Exception) {}
-                    }
-
-                    if (deviceId.isEmpty()) {
-                        database.child("keys").child(key).child("deviceId").setValue(myDeviceId)
-                    } else if (deviceId != myDeviceId) {
-                        showPopup("Device Locked 🔒", "This key is active on another device.\n\nContact admin:\n$adminWhatsApp")
-                        return
-                    }
-
-                    val greeting = if (userName.isNotEmpty()) "Welcome, $userName!" else "Login Successful"
-                    Toast.makeText(this@MainActivity, greeting, Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this@MainActivity, PlayerActivity::class.java))
-                    finish()
+                if (!snapshot.exists()) {
+                    showPopup("Invalid Key ❌", "This key is not valid.\n\nContact admin:\n$adminWhatsApp")
+                    return
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    loginBtn.isEnabled = true
-                    loginBtn.text = "ENTER"
-                    Toast.makeText(this@MainActivity, "Connection error. Try again.", Toast.LENGTH_SHORT).show()
-                }
-            })
-        }
+                val status = snapshot.child("status").getValue(String::class.java) ?: "active"
+                val expiry = snapshot.child("expiry").getValue(String::class.java) ?: "No Limit"
+                val userName = snapshot.child("user").getValue(String::class.java) ?: ""
+                val deviceId = snapshot.child("deviceId").getValue(String::class.java) ?: ""
+                val myDeviceId = android.provider.Settings.Secure.getString(
+                    contentResolver, android.provider.Settings.Secure.ANDROID_ID)
 
-        if (auth.currentUser != null) {
-            doCheck()
-        } else {
-            auth.signInAnonymously().addOnCompleteListener {
-                doCheck()
+                if (status == "paused") {
+                    showRenewPopup("Account Paused ⚠️", "Your account is paused.\n\nContact via WhatsApp:")
+                    return
+                }
+
+                if (expiry != "No Limit" && expiry.isNotEmpty()) {
+                    try {
+                        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val expiryDate = sdf.parse(expiry)
+                        if (expiryDate != null && Date().after(expiryDate)) {
+                            showRenewPopup("Subscription Expired ❌", "Expired on $expiry.\n\nRenew via WhatsApp:")
+                            return
+                        }
+                    } catch (e: Exception) {}
+                }
+
+                if (deviceId.isEmpty()) {
+                    database.child("keys").child(key).child("deviceId").setValue(myDeviceId)
+                } else if (deviceId != myDeviceId) {
+                    showPopup("Device Locked 🔒", "This key is active on another device.\n\nContact admin:\n$adminWhatsApp")
+                    return
+                }
+
+                val greeting = if (userName.isNotEmpty()) "Welcome, $userName!" else "Login Successful"
+                Toast.makeText(this@MainActivity, greeting, Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this@MainActivity, PlayerActivity::class.java))
+                finish()
             }
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                loginBtn.isEnabled = true
+                loginBtn.text = "ENTER"
+                Toast.makeText(this@MainActivity, "Connection error. Try again.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun showPopup(title: String, message: String) {
         AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setCancelable(false)
-            .setPositiveButton("OK", null)
-            .show()
+            .setTitle(title).setMessage(message)
+            .setCancelable(false).setPositiveButton("OK", null).show()
     }
 
     private fun showRenewPopup(title: String, message: String) {
@@ -150,14 +128,12 @@ class MainActivity : AppCompatActivity() {
             .setTitle(title)
             .setMessage("$message\n\n📱 $adminWhatsApp")
             .setCancelable(false)
-            .setPositiveButton("Contact on WhatsApp") { _, _ ->
+            .setPositiveButton("WhatsApp") { _, _ ->
                 try {
-                    val intent = Intent(Intent.ACTION_VIEW,
-                        android.net.Uri.parse("https://wa.me/${adminWhatsApp.replace("+", "").replace(" ", "")}"))
-                    startActivity(intent)
+                    startActivity(Intent(Intent.ACTION_VIEW,
+                        android.net.Uri.parse("https://wa.me/${adminWhatsApp.replace("+","").replace(" ","")}")))
                 } catch (e: Exception) {}
             }
-            .setNegativeButton("Close", null)
-            .show()
+            .setNegativeButton("Close", null).show()
     }
 }
