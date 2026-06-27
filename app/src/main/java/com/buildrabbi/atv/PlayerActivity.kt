@@ -19,12 +19,13 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.PlayerView
+import org.json.JSONArray
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-data class Channel(val name: String, val url: String, val group: String = "")
+data class Channel(val name: String, val url: String, val group: String = "", val img: String = "")
 
 @UnstableApi
 class PlayerActivity : AppCompatActivity() {
@@ -53,9 +54,7 @@ class PlayerActivity : AppCompatActivity() {
     private val hideRunnable = Runnable { hideBars() }
 
     companion object {
-        // তোমার A-TV repo থেকে M3U load করবে
-        private const val M3U_URL = "https://raw.githubusercontent.com/build-rabbi/A-TV/main/playlist.m3u"
-        private const val FALLBACK_URL = "https://raw.githubusercontent.com/imShakil/tvlink/refs/heads/main/iptv.m3u8"
+        private const val CHANNEL_URL = "https://raw.githubusercontent.com/build-rabbi/A-TV/main/LiveTV/LiveTV.txt"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,29 +68,24 @@ class PlayerActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_player)
 
-        playerView    = findViewById(R.id.playerView)
+        playerView      = findViewById(R.id.playerView)
         channelListView = findViewById(R.id.channelList)
-        searchInput   = findViewById(R.id.searchInput)
-        sidePanel     = findViewById(R.id.sidePanel)
-        topBar        = findViewById(R.id.topBar)
-        bottomBar     = findViewById(R.id.bottomBar)
-        loadingText   = findViewById(R.id.loadingText)
+        searchInput     = findViewById(R.id.searchInput)
+        sidePanel       = findViewById(R.id.sidePanel)
+        topBar          = findViewById(R.id.topBar)
+        bottomBar       = findViewById(R.id.bottomBar)
+        loadingText     = findViewById(R.id.loadingText)
         channelNameText = findViewById(R.id.channelName)
-        currentChName = findViewById(R.id.currentChName)
-        btnMenu       = findViewById(R.id.btnMenu)
-        btnProfile    = findViewById(R.id.btnProfile)
-        btnSearch     = findViewById(R.id.btnSearch)
-        btnPrev       = findViewById(R.id.btnPrev)
-        btnNext       = findViewById(R.id.btnNext)
+        currentChName   = findViewById(R.id.currentChName)
+        btnMenu         = findViewById(R.id.btnMenu)
+        btnProfile      = findViewById(R.id.btnProfile)
+        btnSearch       = findViewById(R.id.btnSearch)
+        btnPrev         = findViewById(R.id.btnPrev)
+        btnNext         = findViewById(R.id.btnNext)
 
-        // Touch on player = show bars
         playerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                if (topBar.visibility == View.VISIBLE) {
-                    hideBars()
-                } else {
-                    showBars()
-                }
+                if (topBar.visibility == View.VISIBLE) hideBars() else showBars()
             }
             true
         }
@@ -106,7 +100,6 @@ class PlayerActivity : AppCompatActivity() {
                 playChannel(filteredChannels[currentIndex])
             }
         }
-
         btnNext.setOnClickListener {
             if (filteredChannels.isNotEmpty()) {
                 currentIndex = (currentIndex + 1) % filteredChannels.size
@@ -126,7 +119,7 @@ class PlayerActivity : AppCompatActivity() {
             hideSidePanel()
         }
 
-        loadM3U()
+        loadChannels()
     }
 
     private fun showBars() {
@@ -143,60 +136,55 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadM3U() {
+    private fun loadChannels() {
         loadingText.visibility = View.VISIBLE
         loadingText.text = "Loading channels..."
 
         Thread {
-            val urls = listOf(M3U_URL, FALLBACK_URL)
-            var loaded = false
+            try {
+                val conn = (URL(CHANNEL_URL).openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 10000
+                    readTimeout = 15000
+                    setRequestProperty("User-Agent", "Mozilla/5.0")
+                    connect()
+                }
+                val content = BufferedReader(InputStreamReader(conn.inputStream)).readText()
+                conn.disconnect()
 
-            for (m3uUrl in urls) {
-                try {
-                    val conn = (URL(m3uUrl).openConnection() as HttpURLConnection).apply {
-                        connectTimeout = 10000
-                        readTimeout = 15000
-                        setRequestProperty("User-Agent", "Mozilla/5.0")
-                        connect()
+                val jsonArray = JSONArray(content)
+                for (i in 0 until jsonArray.length()) {
+                    val obj = jsonArray.getJSONObject(i)
+                    val name = obj.optString("name", "Channel")
+                    val url = obj.optString("url", "")
+                    val group = obj.optString("type", "")
+                    val img = obj.optString("img", "")
+                    if (url.isNotEmpty()) {
+                        allChannels.add(Channel(name, url, group, img))
                     }
-                    val lines = BufferedReader(InputStreamReader(conn.inputStream)).readLines()
-                    conn.disconnect()
+                }
 
-                    var name = "Channel"
-                    var group = ""
-                    for (line in lines) {
-                        val l = line.trim()
-                        when {
-                            l.startsWith("#EXTINF") -> {
-                                name = if (l.contains(",")) l.substringAfterLast(",").trim() else "Channel"
-                                group = Regex("group-title=\"([^\"]+)\"").find(l)?.groupValues?.get(1) ?: ""
-                            }
-                            l.startsWith("http") -> {
-                                allChannels.add(Channel(name, l, group))
-                                loaded = true
-                            }
-                        }
+                Handler(Looper.getMainLooper()).post {
+                    loadingText.visibility = View.GONE
+                    if (allChannels.isNotEmpty()) {
+                        filteredChannels.addAll(allChannels)
+                        updateChannelList()
+                        playChannel(allChannels[0])
+                    } else {
+                        loadingText.visibility = View.VISIBLE
+                        loadingText.text = "No channels found"
                     }
-                    if (loaded) break
-                } catch (e: Exception) { continue }
-            }
-
-            Handler(Looper.getMainLooper()).post {
-                loadingText.visibility = View.GONE
-                if (allChannels.isNotEmpty()) {
-                    filteredChannels.addAll(allChannels)
-                    updateChannelList()
-                    playChannel(allChannels[0])
-                } else {
+                }
+            } catch (e: Exception) {
+                Handler(Looper.getMainLooper()).post {
                     loadingText.visibility = View.VISIBLE
-                    loadingText.text = "No channels found"
+                    loadingText.text = "Error: ${e.message}"
                 }
             }
         }.start()
     }
 
     private fun updateChannelList() {
-        val names = filteredChannels.map { "${it.name} ${if(it.group.isNotEmpty()) "(${it.group})" else ""}" }
+        val names = filteredChannels.map { "${it.name}${if (it.group.isNotEmpty()) "  •  ${it.group}" else ""}" }
         channelListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, names)
     }
 
@@ -225,11 +213,11 @@ class PlayerActivity : AppCompatActivity() {
 
         player = ExoPlayer.Builder(this).build().also { exo ->
             playerView.player = exo
-            val src = if (channel.url.contains(".m3u8") || channel.url.contains("tracks-v") ||
-                channel.url.contains("index.m3u")) {
-                HlsMediaSource.Factory(dsFactory).createMediaSource(MediaItem.fromUri(Uri.parse(channel.url)))
+            val url = channel.url
+            val src = if (url.contains(".m3u8") || url.contains("tracks-v") || url.contains("index.m3u")) {
+                HlsMediaSource.Factory(dsFactory).createMediaSource(MediaItem.fromUri(Uri.parse(url)))
             } else {
-                ProgressiveMediaSource.Factory(dsFactory).createMediaSource(MediaItem.fromUri(Uri.parse(channel.url)))
+                ProgressiveMediaSource.Factory(dsFactory).createMediaSource(MediaItem.fromUri(Uri.parse(url)))
             }
             exo.setMediaSource(src)
             exo.prepare()
