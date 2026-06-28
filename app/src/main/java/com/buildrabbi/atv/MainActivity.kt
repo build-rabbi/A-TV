@@ -24,25 +24,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        keyInput = findViewById(R.id.etKey)
-        loginBtn = findViewById(R.id.btnEnter)
+        keyInput    = findViewById(R.id.etKey)
+        loginBtn    = findViewById(R.id.btnEnter)
         registerBtn = findViewById(R.id.btnRegister)
-        database = FirebaseDatabase.getInstance().reference
+        database    = FirebaseDatabase.getInstance().reference
 
-        // Auto login if key saved
+        database.child("settings").child("whatsapp").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                adminWhatsApp = snapshot.getValue(String::class.java) ?: ""
+                getSharedPreferences("atv_prefs", MODE_PRIVATE).edit()
+                    .putString("admin_wa", adminWhatsApp).apply()
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
         val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
         val savedKey = prefs.getString("saved_key", null)
         if (savedKey != null) {
             keyInput.setText(savedKey)
             checkKey(savedKey)
         }
-
-        database.child("settings").child("whatsapp").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                adminWhatsApp = snapshot.getValue(String::class.java) ?: ""
-            }
-            override fun onCancelled(error: DatabaseError) {}
-        })
 
         keyInput.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
@@ -55,15 +56,12 @@ class MainActivity : AppCompatActivity() {
 
         loginBtn.setOnClickListener {
             val key = keyInput.text.toString().trim()
-            if (key.isEmpty()) {
-                Toast.makeText(this, "Please enter your access key", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            if (key.isEmpty()) { Toast.makeText(this, "Please enter your access key", Toast.LENGTH_SHORT).show(); return@setOnClickListener }
             checkKey(key)
         }
 
         registerBtn.setOnClickListener {
-            showPopup("Buy Access Key", "Contact admin on WhatsApp:\n\n$adminWhatsApp")
+            showPopup("Buy Access Key", "Contact admin on WhatsApp to purchase:\n\n📱 $adminWhatsApp")
         }
     }
 
@@ -78,20 +76,19 @@ class MainActivity : AppCompatActivity() {
 
                 if (!snapshot.exists()) {
                     getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().remove("saved_key").apply()
-                    showPopup("Invalid Key ❌", "This key is not valid.\n\nContact admin:\n$adminWhatsApp")
+                    showPopup("Invalid Key ❌", "This key is not valid.\n\nContact admin:\n📱 $adminWhatsApp")
                     return
                 }
 
-                val status = snapshot.child("status").getValue(String::class.java) ?: "active"
-                val expiry = snapshot.child("expiry").getValue(String::class.java) ?: "No Limit"
+                val status   = snapshot.child("status").getValue(String::class.java) ?: "active"
+                val expiry   = snapshot.child("expiry").getValue(String::class.java) ?: "No Limit"
                 val userName = snapshot.child("user").getValue(String::class.java) ?: ""
                 val deviceId = snapshot.child("deviceId").getValue(String::class.java) ?: ""
-                val myDeviceId = android.provider.Settings.Secure.getString(
-                    contentResolver, android.provider.Settings.Secure.ANDROID_ID)
+                val myDevice = android.provider.Settings.Secure.getString(contentResolver, android.provider.Settings.Secure.ANDROID_ID)
 
                 if (status == "paused") {
                     getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().remove("saved_key").apply()
-                    showRenewPopup("Account Paused ⚠️", "Your account is paused.\n\nContact via WhatsApp:")
+                    showRenewPopup("Account Paused ⚠️", "Your account has been paused by admin.")
                     return
                 }
 
@@ -101,28 +98,26 @@ class MainActivity : AppCompatActivity() {
                         val expiryDate = sdf.parse(expiry)
                         if (expiryDate != null && Date().after(expiryDate)) {
                             getSharedPreferences("atv_prefs", MODE_PRIVATE).edit().remove("saved_key").apply()
-                            showRenewPopup("Subscription Expired ❌", "Expired on $expiry.\n\nRenew via WhatsApp:")
+                            showRenewPopup("Subscription Expired ❌", "Your key expired on $expiry.")
                             return
                         }
                     } catch (e: Exception) {}
                 }
 
                 if (deviceId.isEmpty()) {
-                    database.child("keys").child(key).child("deviceId").setValue(myDeviceId)
-                } else if (deviceId != myDeviceId) {
-                    showPopup("Device Locked 🔒", "This key is active on another device.\n\nContact admin:\n$adminWhatsApp")
+                    database.child("keys").child(key).child("deviceId").setValue(myDevice)
+                } else if (deviceId != myDevice) {
+                    showPopup("Device Locked 🔒", "This key is active on another device.\n\nContact admin:\n📱 $adminWhatsApp")
                     return
                 }
 
-                // Save key + user info for auto login and profile
                 getSharedPreferences("atv_prefs", MODE_PRIVATE).edit()
                     .putString("saved_key", key)
                     .putString("user_name", userName)
                     .putString("expiry", expiry)
+                    .putString("admin_wa", adminWhatsApp)
                     .apply()
 
-                val greeting = if (userName.isNotEmpty()) "Welcome, $userName!" else "Login Successful"
-                Toast.makeText(this@MainActivity, greeting, Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this@MainActivity, PlayerActivity::class.java))
                 finish()
             }
@@ -136,20 +131,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showPopup(title: String, message: String) {
-        AlertDialog.Builder(this)
-            .setTitle(title).setMessage(message)
+        AlertDialog.Builder(this).setTitle(title).setMessage(message)
             .setCancelable(false).setPositiveButton("OK", null).show()
     }
 
     private fun showRenewPopup(title: String, message: String) {
         AlertDialog.Builder(this)
             .setTitle(title)
-            .setMessage("$message\n\n📱 $adminWhatsApp")
+            .setMessage("$message\n\nPlease contact admin to renew.\n\n📱 $adminWhatsApp")
             .setCancelable(false)
             .setPositiveButton("WhatsApp") { _, _ ->
                 try {
-                    startActivity(Intent(Intent.ACTION_VIEW,
-                        android.net.Uri.parse("https://wa.me/${adminWhatsApp.replace("+","").replace(" ","")}")))
+                    val num = adminWhatsApp.replace("+", "").replace(" ", "")
+                    startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://wa.me/$num")))
                 } catch (e: Exception) {}
             }
             .setNegativeButton("Close", null).show()

@@ -1,5 +1,6 @@
 package com.buildrabbi.atv
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
@@ -10,6 +11,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -43,7 +45,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var loadingText: TextView
     private lateinit var channelNameText: TextView
     private lateinit var currentChName: TextView
-    private lateinit var playPauseIcon: TextView
+    private lateinit var playPauseIcon: ImageView
     private lateinit var playPauseLabel: TextView
     private lateinit var btnMenu: View
     private lateinit var btnProfile: View
@@ -52,12 +54,21 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnNext: View
     private lateinit var btnPlayPause: View
     private lateinit var categoryTabs: LinearLayout
+    private lateinit var welcomeScreen: FrameLayout
+    private lateinit var welcomeLogo: ImageView
+    private lateinit var welcomeText: TextView
+    private lateinit var statusPopup: FrameLayout
+    private lateinit var popupIcon: TextView
+    private lateinit var popupTitle: TextView
+    private lateinit var popupMessage: TextView
+    private lateinit var popupWhatsapp: TextView
 
     private val allChannels = mutableListOf<Channel>()
     private val filteredChannels = mutableListOf<Channel>()
     private var currentIndex = 0
     private var sidePanelVisible = false
     private var selectedCategory = "All"
+    private var adminWhatsApp = ""
     private val hideHandler = Handler(Looper.getMainLooper())
     private val hideRunnable = Runnable { hideOverlay() }
 
@@ -69,9 +80,7 @@ class PlayerActivity : AppCompatActivity() {
     private val ratioLabels = listOf("Fit", "Fill", "Zoom")
     private var ratioIndex = 0
 
-    companion object {
-        private const val CHANNEL_URL = "https://raw.githubusercontent.com/build-rabbi/A-TV/main/LiveTV/LiveTV.txt"
-    }
+    private val DEFAULT_URL = "https://raw.githubusercontent.com/build-rabbi/A-TV/main/LiveTV/LiveTV.txt"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +93,12 @@ class PlayerActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_player)
 
+        initViews()
+        setupClickListeners()
+        showWelcome()
+    }
+
+    private fun initViews() {
         playerView      = findViewById(R.id.playerView)
         channelListView = findViewById(R.id.channelList)
         searchInput     = findViewById(R.id.searchInput)
@@ -102,31 +117,43 @@ class PlayerActivity : AppCompatActivity() {
         btnNext         = findViewById(R.id.btnNext)
         btnPlayPause    = findViewById(R.id.btnPlayPause)
         categoryTabs    = findViewById(R.id.categoryTabs)
+        welcomeScreen   = findViewById(R.id.welcomeScreen)
+        welcomeLogo     = findViewById(R.id.welcomeLogo)
+        welcomeText     = findViewById(R.id.welcomeText)
+        statusPopup     = findViewById(R.id.statusPopup)
+        popupIcon       = findViewById(R.id.popupIcon)
+        popupTitle      = findViewById(R.id.popupTitle)
+        popupMessage    = findViewById(R.id.popupMessage)
+        popupWhatsapp   = findViewById(R.id.popupWhatsapp)
+    }
 
-        // Single touch = toggle overlay
+    private fun setupClickListeners() {
         playerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) toggleOverlay()
             true
         }
-
         btnMenu.setOnClickListener { toggleSidePanel() }
         btnProfile.setOnClickListener { showProfile() }
-
         btnRatio.setOnClickListener {
             ratioIndex = (ratioIndex + 1) % ratios.size
             playerView.resizeMode = ratios[ratioIndex]
             Toast.makeText(this, "Ratio: ${ratioLabels[ratioIndex]}", Toast.LENGTH_SHORT).show()
             resetHideTimer()
         }
-
         btnPlayPause.setOnClickListener {
             player?.let {
-                if (it.isPlaying) { it.pause(); playPauseIcon.text = "▶"; playPauseLabel.text = "Play" }
-                else { it.play(); playPauseIcon.text = "⏸"; playPauseLabel.text = "Pause" }
+                if (it.isPlaying) {
+                    it.pause()
+                    playPauseIcon.setImageResource(R.drawable.ic_play)
+                    playPauseLabel.text = "Play"
+                } else {
+                    it.play()
+                    playPauseIcon.setImageResource(R.drawable.ic_pause)
+                    playPauseLabel.text = "Pause"
+                }
             }
             resetHideTimer()
         }
-
         btnPrev.setOnClickListener {
             if (filteredChannels.isNotEmpty()) {
                 currentIndex = if (currentIndex > 0) currentIndex - 1 else filteredChannels.size - 1
@@ -139,45 +166,62 @@ class PlayerActivity : AppCompatActivity() {
                 playChannel(filteredChannels[currentIndex]); resetHideTimer()
             }
         }
-
         searchInput.addTextChangedListener(object : android.text.TextWatcher {
             override fun afterTextChanged(s: android.text.Editable?) { applyFilter(s.toString()) }
             override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) {}
             override fun onTextChanged(s: CharSequence?, st: Int, b: Int, c: Int) {}
         })
-
         channelListView.setOnItemClickListener { _, _, pos, _ ->
             currentIndex = pos
             playChannel(filteredChannels[pos])
             hideSidePanel()
         }
-
-        loadChannels()
     }
 
-    private fun toggleOverlay() {
-        if (overlayPanel.visibility == View.VISIBLE) hideOverlay() else showOverlay()
+    private fun showWelcome() {
+        val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
+        val userName = prefs.getString("user_name", "") ?: ""
+        adminWhatsApp = prefs.getString("admin_wa", "") ?: ""
+
+        welcomeScreen.visibility = View.VISIBLE
+
+        // Logo animation
+        val logoAnim = AnimationUtils.loadAnimation(this, R.anim.logo_anim)
+        welcomeLogo.startAnimation(logoAnim)
+
+        // Show welcome text after logo
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (userName.isNotEmpty()) {
+                welcomeText.text = "Welcome, $userName!"
+            } else {
+                welcomeText.text = "Welcome to A-TV"
+            }
+            welcomeText.visibility = View.VISIBLE
+            val textAnim = AnimationUtils.loadAnimation(this, R.anim.welcome_fade_in)
+            welcomeText.startAnimation(textAnim)
+
+            // Hide welcome and start loading
+            Handler(Looper.getMainLooper()).postDelayed({
+                val fadeOut = AnimationUtils.loadAnimation(this, R.anim.welcome_fade_out)
+                welcomeScreen.startAnimation(fadeOut)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    welcomeScreen.visibility = View.GONE
+                    loadChannels()
+                }, 500)
+            }, 1500)
+        }, 800)
     }
 
-    private fun showOverlay() {
-        overlayPanel.visibility = View.VISIBLE
-        resetHideTimer()
-    }
-
-    private fun hideOverlay() {
-        if (!sidePanelVisible) overlayPanel.visibility = View.GONE
-    }
-
-    private fun resetHideTimer() {
-        hideHandler.removeCallbacks(hideRunnable)
-        hideHandler.postDelayed(hideRunnable, 4000)
+    private fun getChannelUrl(): String {
+        val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
+        return prefs.getString("playlist_url", DEFAULT_URL) ?: DEFAULT_URL
     }
 
     private fun loadChannels() {
         loadingLayout.visibility = View.VISIBLE
         Thread {
             try {
-                val conn = (URL(CHANNEL_URL).openConnection() as HttpURLConnection).apply {
+                val conn = (URL(getChannelUrl()).openConnection() as HttpURLConnection).apply {
                     connectTimeout = 10000; readTimeout = 20000
                     setRequestProperty("User-Agent", "Mozilla/5.0"); connect()
                 }
@@ -272,13 +316,13 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun playChannel(channel: Channel) {
-        currentChName.text = "▶  ${channel.name}"
+        currentChName.text = channel.name
         currentChName.visibility = View.VISIBLE
-        channelNameText.text = "▶  ${channel.name}"
+        channelNameText.text = channel.name
         channelNameText.visibility = View.VISIBLE
         Handler(Looper.getMainLooper()).postDelayed({ channelNameText.visibility = View.GONE }, 3000)
 
-        playPauseIcon.text = "⏸"
+        playPauseIcon.setImageResource(R.drawable.ic_pause)
         playPauseLabel.text = "Pause"
 
         player?.release()
@@ -306,52 +350,103 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun toggleSidePanel() { if (sidePanelVisible) hideSidePanel() else showSidePanel() }
-
-    private fun showSidePanel() {
-        sidePanel.visibility = View.VISIBLE
-        sidePanelVisible = true
-        showOverlay()
-        hideHandler.removeCallbacks(hideRunnable)
-    }
-
-    private fun hideSidePanel() {
-        sidePanel.visibility = View.GONE
-        sidePanelVisible = false
-        hideHandler.postDelayed(hideRunnable, 3000)
+    fun showStatusPopup(icon: String, title: String, message: String) {
+        runOnUiThread {
+            player?.pause()
+            popupIcon.text = icon
+            popupTitle.text = title
+            popupMessage.text = message
+            popupWhatsapp.setOnClickListener {
+                try {
+                    val num = adminWhatsApp.replace("+", "").replace(" ", "")
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$num")))
+                } catch (e: Exception) {}
+            }
+            statusPopup.visibility = View.VISIBLE
+        }
     }
 
     private fun showProfile() {
-        val p = getSharedPreferences("atv_prefs", MODE_PRIVATE)
+        val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
+        val currentUrl = prefs.getString("playlist_url", null)
+        val items = arrayOf("Change Playlist", "Logout")
         AlertDialog.Builder(this)
-            .setTitle("👤 Profile")
-            .setMessage("Name: ${p.getString("user_name","Unknown")}\nKey: ${p.getString("saved_key","Unknown")}\nExpiry: ${p.getString("expiry","No Limit")}")
-            .setPositiveButton("OK", null)
-            .setNegativeButton("Logout") { _, _ -> p.edit().remove("saved_key").apply(); finish() }
+            .setTitle("👤 ${prefs.getString("user_name","Profile")}")
+            .setMessage("Key: ${prefs.getString("saved_key","Unknown")}\nExpiry: ${prefs.getString("expiry","No Limit")}")
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> showPlaylistDialog(currentUrl)
+                    1 -> { prefs.edit().remove("saved_key").apply(); finish() }
+                }
+            }
+            .setNegativeButton("Close", null)
             .show()
     }
 
+    private fun showPlaylistDialog(currentUrl: String?) {
+        val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
+        val input = EditText(this).apply {
+            hint = "Playlist URL (leave empty for default)"
+            setText(if (currentUrl == DEFAULT_URL || currentUrl == null) "" else currentUrl)
+            setPadding(40, 20, 40, 20)
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Change Playlist")
+            .setMessage("Current: ${if (currentUrl == null || currentUrl == DEFAULT_URL) "Default" else currentUrl}")
+            .setView(input)
+            .setPositiveButton("Save") { _, _ ->
+                val url = input.text.toString().trim()
+                if (url.isEmpty()) {
+                    prefs.edit().remove("playlist_url").apply()
+                } else {
+                    prefs.edit().putString("playlist_url", url).apply()
+                }
+                allChannels.clear()
+                filteredChannels.clear()
+                loadChannels()
+            }
+            .setNegativeButton("Use Default") { _, _ ->
+                prefs.edit().remove("playlist_url").apply()
+                allChannels.clear()
+                filteredChannels.clear()
+                loadChannels()
+            }
+            .show()
+    }
+
+    private fun toggleOverlay() { if (overlayPanel.visibility == View.VISIBLE) hideOverlay() else showOverlay() }
+    private fun showOverlay() { overlayPanel.visibility = View.VISIBLE; resetHideTimer() }
+    private fun hideOverlay() { if (!sidePanelVisible) overlayPanel.visibility = View.GONE }
+    private fun resetHideTimer() { hideHandler.removeCallbacks(hideRunnable); hideHandler.postDelayed(hideRunnable, 4000) }
+    private fun toggleSidePanel() { if (sidePanelVisible) hideSidePanel() else showSidePanel() }
+    private fun showSidePanel() { sidePanel.visibility = View.VISIBLE; sidePanelVisible = true; showOverlay(); hideHandler.removeCallbacks(hideRunnable) }
+    private fun hideSidePanel() { sidePanel.visibility = View.GONE; sidePanelVisible = false; hideHandler.postDelayed(hideRunnable, 3000) }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (statusPopup.visibility == View.VISIBLE) return true
         return when (keyCode) {
             KeyEvent.KEYCODE_BACK -> { if (sidePanelVisible) { hideSidePanel(); true } else { finish(); true } }
             KeyEvent.KEYCODE_MENU -> { toggleSidePanel(); true }
-            KeyEvent.KEYCODE_DPAD_RIGHT -> { showSidePanel(); true }
-            KeyEvent.KEYCODE_DPAD_LEFT -> { hideSidePanel(); true }
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                if (!sidePanelVisible) { toggleOverlay(); true } else false
+            }
+            KeyEvent.KEYCODE_DPAD_RIGHT -> { if (!sidePanelVisible) { showSidePanel(); true } else false }
+            KeyEvent.KEYCODE_DPAD_LEFT -> { if (sidePanelVisible) { hideSidePanel(); true } else false }
             KeyEvent.KEYCODE_DPAD_UP -> {
-                if (!sidePanelVisible && filteredChannels.isNotEmpty()) {
+                if (sidePanelVisible) return false
+                if (filteredChannels.isNotEmpty()) {
                     currentIndex = if (currentIndex > 0) currentIndex - 1 else filteredChannels.size - 1
                     playChannel(filteredChannels[currentIndex]); showOverlay()
                 }; true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                if (!sidePanelVisible && filteredChannels.isNotEmpty()) {
+                if (sidePanelVisible) return false
+                if (filteredChannels.isNotEmpty()) {
                     currentIndex = (currentIndex + 1) % filteredChannels.size
                     playChannel(filteredChannels[currentIndex]); showOverlay()
                 }; true
             }
-            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_SPACE -> {
-                btnPlayPause.performClick(); true
-            }
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_SPACE -> { btnPlayPause.performClick(); true }
             else -> super.onKeyDown(keyCode, event)
         }
     }
