@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
+    android:background="@drawable/channel_item_bg">
+
+    <TextView
+        android:id="@+id/chNumber"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:textColor="#5A6A7A"
+        android:textSize="11sp"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="8dp">
+
+        <TextView
+            android:id="@+id/chName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#E8EDF2"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/chGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#5A6A7A"
+            android:textSize="10sp"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/chActive"
+        android:layout_width="4dp"
+        android:layout_height="24dp"
+        android:background="#00C2FF"
+        android:visibility="invisible"/>
+
+</LinearLayout>
