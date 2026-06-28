@@ -182,7 +182,14 @@ class PlayerActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
         val userName = prefs.getString("user_name", "") ?: ""
         adminWhatsApp = prefs.getString("admin_wa", "") ?: ""
+        val isFirstLogin = !prefs.getBoolean("welcome_shown", false)
 
+        if (!isFirstLogin) {
+            welcomeScreen.visibility = View.GONE
+            loadChannels()
+            return
+        }
+        prefs.edit().putBoolean("welcome_shown", true).apply()
         welcomeScreen.visibility = View.VISIBLE
 
         // Logo animation
@@ -369,14 +376,15 @@ class PlayerActivity : AppCompatActivity() {
     private fun showProfile() {
         val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
         val currentUrl = prefs.getString("playlist_url", null)
-        val items = arrayOf("Change Playlist", "Logout")
+        val playlistLabel = if (currentUrl == null || currentUrl == DEFAULT_URL) "Default" else "Custom"
+        val items = arrayOf("Change ISP / Playlist ($playlistLabel)", "Logout")
         AlertDialog.Builder(this)
             .setTitle("👤 ${prefs.getString("user_name","Profile")}")
-            .setMessage("Key: ${prefs.getString("saved_key","Unknown")}\nExpiry: ${prefs.getString("expiry","No Limit")}")
+            .setMessage("Key: ${prefs.getString("saved_key","Unknown")}\nExpiry: ${prefs.getString("expiry","No Limit")}\nPlaylist: $playlistLabel")
             .setItems(items) { _, which ->
                 when (which) {
                     0 -> showPlaylistDialog(currentUrl)
-                    1 -> { prefs.edit().remove("saved_key").apply(); finish() }
+                    1 -> { prefs.edit().remove("saved_key").remove("welcome_shown").apply(); finish() }
                 }
             }
             .setNegativeButton("Close", null)

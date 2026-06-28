@@ -174,7 +174,7 @@
             </LinearLayout>
 
             <LinearLayout android:id="@+id/btnPlayPause"
-                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_width="80dp"
                 android:layout_height="54dp"
                 android:background="@drawable/playpause_btn_bg"
                 android:orientation="vertical" android:gravity="center"
