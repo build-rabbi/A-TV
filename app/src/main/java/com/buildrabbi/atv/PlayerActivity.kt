@@ -368,34 +368,58 @@ class PlayerActivity : AppCompatActivity() {
             .show()
     }
 
+    private val ispServers = linkedMapOf(
+        "Default (A-TV)" to DEFAULT_URL,
+        "Server 1" to "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/main/playlist.m3u",
+        "Server 2" to "https://raw.githubusercontent.com/imShakil/tvlink/refs/heads/main/iptv.m3u8",
+        "Server 3" to "https://raw.githubusercontent.com/devsground/IPTV/master/channels_V2/bdix/bdix_bdtv.m3u",
+        "Custom URL..." to "CUSTOM"
+    )
+
     private fun showPlaylistDialog(currentUrl: String?) {
         val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
-        val isDefault = currentUrl == null || currentUrl == DEFAULT_URL
+        val effectiveUrl = currentUrl ?: DEFAULT_URL
+        val names = ispServers.keys.toTypedArray()
+        val urls = ispServers.values.toTypedArray()
+        var selectedIndex = urls.indexOf(effectiveUrl).let { if (it == -1) names.size - 1 else it }
+
+        AlertDialog.Builder(this)
+            .setTitle("📡  Change ISP / Playlist")
+            .setSingleChoiceItems(names, selectedIndex) { dialog, which ->
+                selectedIndex = which
+                if (urls[which] == "CUSTOM") {
+                    dialog.dismiss()
+                    showCustomUrlDialog()
+                } else {
+                    prefs.edit().putString("playlist_url", urls[which]).apply()
+                    dialog.dismiss()
+                    loadChannels()
+                    Toast.makeText(this, "Switched to ${names[which]}", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showCustomUrlDialog() {
+        val prefs = getSharedPreferences("atv_prefs", MODE_PRIVATE)
         val input = EditText(this).apply {
             hint = "Paste playlist URL here..."
-            setText(if (isDefault) "" else currentUrl)
             setPadding(40, 24, 40, 24)
             setTextColor(Color.WHITE)
             setHintTextColor(Color.parseColor("#5A6A7A"))
             setBackgroundColor(Color.parseColor("#141A22"))
         }
-
         AlertDialog.Builder(this)
-            .setTitle("📡  Change ISP / Playlist")
-            .setMessage("Current: ${ if (isDefault) "Default playlist" else currentUrl }\n\nPaste a new playlist URL or leave empty to use default:")
+            .setTitle("Custom Playlist URL")
             .setView(input)
             .setPositiveButton("Save") { _, _ ->
                 val url = input.text.toString().trim()
-                if (url.isEmpty() || url == DEFAULT_URL) {
-                    prefs.edit().remove("playlist_url").apply()
-                } else {
+                if (url.isNotEmpty()) {
                     prefs.edit().putString("playlist_url", url).apply()
+                    loadChannels()
+                    Toast.makeText(this, "Custom playlist saved", Toast.LENGTH_SHORT).show()
                 }
-                loadChannels()
-            }
-            .setNeutralButton("Use Default") { _, _ ->
-                prefs.edit().remove("playlist_url").apply()
-                loadChannels()
             }
             .setNegativeButton("Cancel", null)
             .show()

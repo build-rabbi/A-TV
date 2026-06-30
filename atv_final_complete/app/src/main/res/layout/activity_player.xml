@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- Player -->
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        app:use_controller="false"/>
+
+    <!-- Channel Name OSD -->
+    <TextView
+        android:id="@+id/channelName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/osd_bg"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <!-- Loading -->
+    <LinearLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+        <ProgressBar android:layout_width="52dp" android:layout_height="52dp"
+            android:indeterminateTint="#00C2FF"/>
+        <TextView android:id="@+id/loadingText"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="14dp" android:text="Loading channels..."
+            android:textColor="#AAFFFFFF" android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- Welcome Screen -->
+    <FrameLayout
+        android:id="@+id/welcomeScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF080B10"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/welcomeLogo"
+                android:layout_width="180dp"
+                android:layout_height="90dp"
+                android:src="@drawable/atv_logo"
+                android:scaleType="fitCenter"/>
+            <TextView
+                android:id="@+id/welcomeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:visibility="gone"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Loading your channels..."
+                android:textColor="#5A6A7A"
+                android:textSize="13sp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- OVERLAY (single touch) -->
+    <LinearLayout
+        android:id="@+id/overlayPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- TOP BAR -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:background="@drawable/bar_bg_top"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <LinearLayout android:id="@+id/btnMenu"
+                android:layout_width="60dp" android:layout_height="52dp"
+                android:background="@drawable/ctrl_btn_bg"
+                android:orientation="vertical" android:gravity="center">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:src="@drawable/ic_list"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="List" android:textColor="#AAFFFFFF" android:textSize="9sp"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+
+            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="A-TV" android:textColor="#00C2FF"
+                android:textSize="20sp" android:textStyle="bold" android:letterSpacing="0.15"/>
+
+            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+            <LinearLayout android:id="@+id/btnRatio"
+                android:layout_width="60dp" android:layout_height="52dp"
+                android:background="@drawable/ctrl_btn_bg"
+                android:orientation="vertical" android:gravity="center"
+                android:layout_marginEnd="8dp">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:src="@drawable/ic_ratio"/>
+                <TextView android:id="@+id/ratioLabel"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Fit" android:textColor="#00C2FF" android:textSize="9sp"
+                    android:textStyle="bold" android:layout_marginTop="3dp"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/btnProfile"
+                android:layout_width="60dp" android:layout_height="52dp"
+                android:background="@drawable/ctrl_btn_bg"
+                android:orientation="vertical" android:gravity="center">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:src="@drawable/ic_profile"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Profile" android:textColor="#AAFFFFFF" android:textSize="9sp"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- MIDDLE spacer -->
+        <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+
+        <!-- BOTTOM BAR -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:background="@drawable/bar_bg_bottom"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <LinearLayout android:id="@+id/btnPrev"
+                android:layout_width="64dp" android:layout_height="54dp"
+                android:background="@drawable/ctrl_btn_bg"
+                android:orientation="vertical" android:gravity="center">
+                <ImageView android:layout_width="26dp" android:layout_height="26dp"
+                    android:src="@drawable/ic_prev"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Prev" android:textColor="#AAFFFFFF" android:textSize="9sp"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/btnPlayPause"
+                android:layout_width="80dp"
+                android:layout_height="54dp"
+                android:background="@drawable/playpause_btn_bg"
+                android:orientation="vertical" android:gravity="center"
+                android:layout_marginStart="10dp" android:layout_marginEnd="10dp">
+                <ImageView android:id="@+id/playPauseIcon"
+                    android:layout_width="30dp" android:layout_height="30dp"
+                    android:src="@drawable/ic_pause"/>
+                <TextView android:id="@+id/playPauseLabel"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Pause" android:textColor="#44000000" android:textSize="9sp"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/currentChName"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"/>
+
+            <LinearLayout android:id="@+id/btnNext"
+                android:layout_width="64dp" android:layout_height="54dp"
+                android:background="@drawable/ctrl_btn_bg"
+                android:orientation="vertical" android:gravity="center">
+                <ImageView android:layout_width="26dp" android:layout_height="26dp"
+                    android:src="@drawable/ic_next"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Next" android:textColor="#AAFFFFFF" android:textSize="9sp"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- SIDE PANEL -->
+    <LinearLayout
+        android:id="@+id/sidePanel"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="@drawable/side_panel_bg"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:visibility="gone">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent" android:layout_height="40dp"
+            android:scrollbars="none"
+            android:layout_marginTop="4dp" android:layout_marginBottom="6dp">
+            <LinearLayout android:id="@+id/categoryTabs"
+                android:layout_width="wrap_content" android:layout_height="match_parent"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="8dp" android:paddingEnd="8dp"/>
+        </HorizontalScrollView>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="42dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:background="@drawable/search_bg"
+            android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+            android:layout_marginBottom="6dp" android:paddingStart="12dp">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_search"/>
+            <EditText android:id="@+id/searchInput"
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="Search channels..."
+                android:textColorHint="#5A6A7A"
+                android:textColor="#FFFFFF" android:textSize="13sp"
+                android:paddingStart="10dp" android:paddingEnd="10dp"
+                android:inputType="text" android:imeOptions="actionSearch"/>
+        </LinearLayout>
+
+        <ListView android:id="@+id/channelList"
+            android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="#1E2830" android:dividerHeight="1dp"/>
+    </LinearLayout>
+
+    <!-- Expired/Paused Popup -->
+    <FrameLayout
+        android:id="@+id/statusPopup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="360dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/popup_bg"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:gravity="center">
+            <TextView android:id="@+id/popupIcon"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="48sp" android:layout_marginBottom="16dp"/>
+            <TextView android:id="@+id/popupTitle"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"
+                android:gravity="center" android:layout_marginBottom="12dp"/>
+            <TextView android:id="@+id/popupMessage"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="#AAFFFFFF" android:textSize="14sp"
+                android:gravity="center" android:layout_marginBottom="24dp"/>
+            <TextView android:id="@+id/popupWhatsapp"
+                android:layout_width="match_parent" android:layout_height="48dp"
+                android:background="@drawable/wa_btn_bg"
+                android:gravity="center"
+                android:text="Contact on WhatsApp"
+                android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold"/>
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>
