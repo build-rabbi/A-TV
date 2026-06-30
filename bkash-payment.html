@@ -187,6 +187,17 @@ const firebaseConfig = {
 const SPV_API_KEY = "SPV-8D4HYP4Y-51VXMYBO";
 
 let db, userData={}, adminWa='8801731410341', verifyTimer=null, countdownTimer=null;
+const urlParams = new URLSearchParams(window.location.search);
+const tvDeviceId = urlParams.get('device');
+// If opened from TV QR, show a notice
+window.addEventListener('load', () => {
+  if (tvDeviceId) {
+    const notice = document.createElement('div');
+    notice.style.cssText = 'background:#E2136E;color:#fff;text-align:center;padding:10px;font-size:13px;font-weight:700;';
+    notice.textContent = '📺 TV detected — your TV will auto-start after payment!';
+    document.querySelector('.topbar').after(notice);
+  }
+});
 
 try {
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -354,6 +365,22 @@ function showKey(key) {
   document.getElementById('keyDisplay').textContent = key;
   document.getElementById('cardTitle').textContent = '🎉 Key Ready!';
   document.getElementById('cardSub').textContent = 'Your IPTV key is ready to use';
+
+  // If opened from TV QR scan, push key to pending_devices so TV auto-logs in
+  const urlParams = new URLSearchParams(window.location.search);
+  const deviceId = urlParams.get('device');
+  if (deviceId && db) {
+    db.ref('pending_devices/' + deviceId).set({
+      key: key,
+      name: userData.name,
+      expiry: (() => {
+        if (userData.days === 0) return 'No Limit';
+        const d = new Date(); d.setDate(d.getDate() + userData.days);
+        return d.toISOString().split('T')[0];
+      })(),
+      timestamp: Date.now()
+    });
+  }
 }
 
 function showFail() {

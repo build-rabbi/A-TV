@@ -4,13 +4,11 @@
     android:layout_height="match_parent"
     android:background="#080B10">
 
-    <!-- Background gradient -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bg_gradient"/>
 
-    <!-- Centered horizontal layout for TV landscape -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +18,7 @@
         android:paddingStart="60dp"
         android:paddingEnd="60dp">
 
-        <!-- Left: QR Code -->
+        <!-- Left: QR -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -28,7 +26,6 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <!-- QR White background box -->
             <LinearLayout
                 android:layout_width="280dp"
                 android:layout_height="280dp"
@@ -51,6 +48,18 @@
                 android:textSize="12sp"
                 android:layout_marginTop="8dp"/>
 
+            <!-- Status text under QR -->
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏳ Waiting for payment..."
+                android:textColor="#00C2FF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="16dp"/>
+
         </LinearLayout>
 
         <!-- Divider -->
@@ -69,7 +78,6 @@
             android:orientation="vertical"
             android:gravity="start">
 
-            <!-- App logo text -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -83,72 +91,58 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Premium IPTV Player"
+                android:text="Buy Access Key"
                 android:textColor="#5A6A7A"
                 android:textSize="13sp"
                 android:layout_marginBottom="28dp"/>
 
-            <!-- Step 1 -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
-                <TextView android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginBottom="16dp">
+                <TextView android:layout_width="28dp" android:layout_height="28dp"
                     android:background="@drawable/osd_bg" android:text="1"
-                    android:textColor="#00C2FF" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="#00C2FF" android:textSize="13sp" android:textStyle="bold"
                     android:gravity="center"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Point your phone camera at the QR code"
+                    android:text="Scan QR with your phone camera"
                     android:textColor="#E8EDF2" android:textSize="13sp"
-                    android:layout_marginStart="10dp"/>
+                    android:layout_marginStart="12dp"/>
             </LinearLayout>
 
-            <!-- Step 2 -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
-                <TextView android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginBottom="16dp">
+                <TextView android:layout_width="28dp" android:layout_height="28dp"
                     android:background="@drawable/osd_bg" android:text="2"
-                    android:textColor="#00C2FF" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="#00C2FF" android:textSize="13sp" android:textStyle="bold"
                     android:gravity="center"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Complete payment on your phone"
+                    android:text="Complete bKash payment on your phone"
                     android:textColor="#E8EDF2" android:textSize="13sp"
-                    android:layout_marginStart="10dp"/>
+                    android:layout_marginStart="12dp"/>
             </LinearLayout>
 
-            <!-- Step 3 -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:gravity="center_vertical"
                 android:layout_marginBottom="32dp">
-                <TextView android:layout_width="26dp" android:layout_height="26dp"
+                <TextView android:layout_width="28dp" android:layout_height="28dp"
                     android:background="@drawable/osd_bg" android:text="3"
-                    android:textColor="#00C2FF" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="#00C2FF" android:textSize="13sp" android:textStyle="bold"
                     android:gravity="center"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Enter the key you receive on this screen"
-                    android:textColor="#E8EDF2" android:textSize="13sp"
-                    android:layout_marginStart="10dp"/>
+                    android:text="TV auto-starts immediately after payment!"
+                    android:textColor="#00E676" android:textSize="13sp" android:textStyle="bold"
+                    android:layout_marginStart="12dp"/>
             </LinearLayout>
 
-            <!-- Payment URL label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PAYMENT PAGE"
+                android:text="No manual key entry needed"
                 android:textColor="#5A6A7A"
-                android:textSize="10sp"
-                android:letterSpacing="0.15"
-                android:layout_marginBottom="4dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="build-rabbi.github.io/A-TV/bkash-payment.html"
-                android:textColor="#00C2FF"
-                android:textSize="11sp"
-                android:fontFamily="monospace"
+                android:textSize="12sp"
                 android:layout_marginBottom="28dp"/>
 
-            <!-- Back button -->
             <Button
                 android:id="@+id/btnBack"
                 android:layout_width="220dp"
@@ -156,11 +150,8 @@
                 android:background="@drawable/btn_register_bg"
                 android:text="BACK TO LOGIN"
                 android:textColor="#00C2FF"
-                android:textSize="13sp"
-                android:letterSpacing="0.08"/>
+                android:textSize="13sp"/>
 
         </LinearLayout>
-
     </LinearLayout>
-
 </RelativeLayout>
