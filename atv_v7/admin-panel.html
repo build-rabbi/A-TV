@@ -117,7 +117,40 @@ tr:hover td{background:var(--surface2);}
 .info-label{color:var(--muted);font-size:12px;}
 .info-value{color:var(--text);font-weight:500;text-align:right;max-width:60%;word-break:break-all;}
 .info-key-val{font-family:monospace;color:var(--accent);font-size:13px;}
-.empty-state{text-align:center;padding:48px;color:var(--muted);}
+
+  /* PAYMENTS */
+  .pay-filter{padding:8px 16px;background:var(--surface);border:1px solid var(--border);
+    color:var(--muted);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;}
+  .pay-filter.active{background:var(--accent);color:#000;border-color:var(--accent);}
+  .pcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:16px;margin-bottom:12px;transition:border-color .15s;}
+  .pcard:hover{border-color:#2A3A4A;}
+  .pcard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .pcard-id{font-size:11px;color:var(--muted);font-weight:600;}
+  .pcard-time{font-size:11px;color:var(--muted);}
+  .pay-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;}
+  .pay-badge.pending{background:#FFB80022;color:var(--warn);}
+  .pay-badge.approved{background:#00E67622;color:var(--success);}
+  .pay-badge.rejected{background:#FF4D4D22;color:var(--danger);}
+  .pcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+  .pcard-field .pf{font-size:11px;color:var(--muted);}
+  .pcard-field .pv{font-size:13px;color:var(--text);font-weight:600;margin-top:2px;}
+  .trx-box{background:var(--bg);border-radius:8px;padding:8px 12px;margin-bottom:10px;}
+  .trx-box .tl{font-size:10px;color:var(--muted);font-weight:700;}
+  .trx-box .tv{font-size:14px;color:var(--accent);font-weight:900;letter-spacing:1px;}
+  .key-issued{background:#0D1A0D;border:1px solid #2E4D2E;border-radius:8px;padding:8px 12px;margin-bottom:10px;}
+  .key-issued .kl{font-size:10px;color:var(--success);font-weight:700;}
+  .key-issued .kv{font-size:13px;color:#66BB6A;font-weight:900;letter-spacing:1px;}
+  .pay-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn-approve{flex:1;min-width:120px;padding:9px;background:var(--success);color:#000;
+    border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;}
+  .btn-reject{padding:9px 14px;background:transparent;border:1px solid var(--border);
+    color:var(--muted);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;}
+  .btn-reject:hover{border-color:var(--danger);color:var(--danger);}
+  .btn-wa-pay{padding:9px 14px;background:#25D36622;color:#25D366;
+    border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;}
+
+  .empty-state{text-align:center;padding:48px;color:var(--muted);}
 .loading{text-align:center;padding:32px;color:var(--muted);font-size:14px;}
 /* RESET DEVICE BTN */
 .btn-reset-device{padding:5px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:#7B61FF22;color:#7B61FF;}
@@ -168,6 +201,9 @@ tr:hover td{background:var(--surface2);}
     </div>
     <div class="nav-item" onclick="showPage('create',this)">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Create Key
+    </div>
+    <div class="nav-item" onclick="showPage('payments',this)">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Payments
     </div>
     <div class="nav-item" onclick="showPage('settings',this)">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>Settings
@@ -250,6 +286,24 @@ tr:hover td{background:var(--surface2);}
           <button class="btn-secondary" onclick="resetForm()">Reset</button>
         </div>
       </div>
+    </div>
+
+
+    <!-- PAYMENTS -->
+    <div class="page" id="page-payments">
+      <div class="page-title">bKash Payments</div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value blue" id="pay-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value yellow" id="pay-pending">—</div></div>
+        <div class="stat-card"><div class="stat-label">Approved</div><div class="stat-value green" id="pay-approved">—</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="pay-filter active" onclick="filterPay('all',this)">All</button>
+        <button class="pay-filter" onclick="filterPay('pending',this)">Pending</button>
+        <button class="pay-filter" onclick="filterPay('approved',this)">Approved</button>
+        <button class="pay-filter" onclick="filterPay('rejected',this)">Rejected</button>
+      </div>
+      <div id="paymentList"><div class="loading">Loading payments...</div></div>
     </div>
 
     <!-- SETTINGS -->
@@ -348,7 +402,7 @@ onAuthStateChanged(auth, user => {
   if (user) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-    loadDashboard(); loadAllKeys(); loadSettings();
+    loadDashboard(); loadAllKeys(); loadSettings(); loadPayments();
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
@@ -574,6 +628,123 @@ window.closeDotMenus = () => {
   document.querySelectorAll('.dot-dropdown').forEach(d => d.classList.remove('open'));
 };
 document.addEventListener('click', window.closeDotMenus);
+
+
+let allPayments = {};
+let currentPayFilter = 'all';
+
+function loadPayments() {
+  onValue(ref(db,'payments'), snap => {
+    allPayments = {};
+    if (snap.exists()) snap.forEach(c => { allPayments[c.key] = c.val(); });
+    updatePayStats();
+    renderPayments(currentPayFilter);
+  });
+}
+
+function updatePayStats() {
+  const vals = Object.values(allPayments);
+  document.getElementById('pay-total').textContent = vals.length;
+  document.getElementById('pay-pending').textContent = vals.filter(p=>p.status==='pending').length;
+  document.getElementById('pay-approved').textContent = vals.filter(p=>p.status==='approved').length;
+}
+
+window.filterPay = (f, btn) => {
+  currentPayFilter = f;
+  document.querySelectorAll('.pay-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPayments(f);
+};
+
+function renderPayments(filter) {
+  const list = document.getElementById('paymentList');
+  let entries = Object.entries(allPayments).reverse();
+  if (filter !== 'all') entries = entries.filter(([,p]) => p.status === filter);
+
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state">No '+filter+' payments found.</div>';
+    return;
+  }
+
+  list.innerHTML = entries.map(([id, p]) => {
+    const dt = new Date(p.timestamp).toLocaleString('en-BD');
+    const badge = `<span class="pay-badge ${p.status}">${p.status.toUpperCase()}</span>`;
+    const keyHtml = p.key
+      ? `<div class="key-issued"><div class="kl">✅ KEY ISSUED</div><div class="kv">${p.key}</div></div>`
+      : '';
+    const actions = p.status === 'pending'
+      ? `<button class="btn-approve" onclick="window.approvePayment('${id}')">✓ Approve & Generate Key</button>
+         <button class="btn-wa-pay" onclick="window.waUser('${p.whatsapp}','')">WhatsApp</button>
+         <button class="btn-reject" onclick="window.rejectPayment('${id}')">✗</button>`
+      : p.status === 'approved'
+      ? `<button class="btn-wa-pay" onclick="window.waUser('${p.whatsapp}','${p.key||''}')">📤 Resend Key</button>`
+      : `<span style="font-size:12px;color:var(--danger)">Payment Rejected</span>`;
+
+    return `<div class="pcard">
+      <div class="pcard-head">
+        <div><div class="pcard-id">${id}</div><div class="pcard-time">${dt}</div></div>
+        ${badge}
+      </div>
+      <div class="pcard-grid">
+        <div class="pcard-field"><div class="pf">NAME</div><div class="pv">${p.name||'—'}</div></div>
+        <div class="pcard-field"><div class="pf">WHATSAPP</div><div class="pv">${p.whatsapp||'—'}</div></div>
+        <div class="pcard-field"><div class="pf">PLAN</div><div class="pv">${p.plan||'—'}</div></div>
+        <div class="pcard-field"><div class="pf">AMOUNT</div><div class="pv">৳${p.amount||'—'}</div></div>
+        <div class="pcard-field"><div class="pf">SENDER bKASH</div><div class="pv">${p.senderNumber||'—'}</div></div>
+        <div class="pcard-field"><div class="pf">EXPIRY</div><div class="pv">${p.expiry||'No Limit'}</div></div>
+      </div>
+      <div class="trx-box"><div class="tl">TRANSACTION ID</div><div class="tv">${p.trxId||'—'}</div></div>
+      ${keyHtml}
+      <div class="pay-actions">${actions}</div>
+    </div>`;
+  }).join('');
+}
+
+function genPayKey() {
+  const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const seg = () => Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join('');
+  return `ATVP-${seg()}-${seg()}-${seg()}`;
+}
+
+window.approvePayment = async (paymentId) => {
+  const p = allPayments[paymentId];
+  if (!p) return;
+  const key = genPayKey();
+
+  const keyData = {
+    user: p.name,
+    phone: p.whatsapp,
+    expiry: p.expiry || 'No Limit',
+    status: 'active',
+    deviceId: '',
+    createdAt: new Date().toISOString().split('T')[0]
+  };
+
+  try {
+    await set(ref(db, `keys/${key}`), keyData);
+    await update(ref(db, `payments/${paymentId}`), { status: 'approved', key });
+    showToast(`Key generated: ${key}`, 'success');
+    window.waUser(p.whatsapp, key);
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+};
+
+window.rejectPayment = async (paymentId) => {
+  if (!confirm('Reject this payment?')) return;
+  await update(ref(db, `payments/${paymentId}`), { status: 'rejected' });
+  showToast('Payment rejected', 'success');
+};
+
+window.waUser = (whatsapp, key) => {
+  let msg;
+  if (key) {
+    msg = `🎉 *আপনার A-TV Player Key তৈরি হয়েছে!*\n\n🔑 Key: *${key}*\n\nA-TV Player app খুলুন → Key বক্সে এই key টি enter করুন → Enter চাপুন।`;
+  } else {
+    msg = `সালাম! A-TV Player Payment Panel থেকে যোগাযোগ করছি।`;
+  }
+  window.open(`https://wa.me/88${whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+};
 
 window.showToast = (msg, type) => {
   const t = document.getElementById('toast');

@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         registerBtn.setOnClickListener {
-            showPopup("Buy Access Key", "Contact admin on WhatsApp to purchase:\n\n📱 $adminWhatsApp")
+            startActivity(Intent(this, QrPaymentActivity::class.java))
         }
     }
 
