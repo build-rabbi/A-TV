@@ -10,7 +10,8 @@ body{min-height:100vh;background:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif
 .topbar{width:100%;background:#E2136E;padding:12px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(226,19,110,.4)}
 .logo-text{color:#fff;font-size:19px;font-weight:800}
 .logo-sub{color:rgba(255,255,255,.75);font-size:11px}
-.progress-wrap{width:100%;max-width:420px;margin:20px 16px 0;display:flex;align-items:center}
+.tv-notice{width:100%;background:#c40d5a;color:#fff;text-align:center;padding:9px;font-size:13px;font-weight:700;display:none}
+.progress-wrap{width:100%;max-width:440px;margin:20px 16px 0;display:flex;align-items:center}
 .prog-step{display:flex;flex-direction:column;align-items:center;flex:1}
 .prog-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;border:2px solid #ddd;background:#fff;color:#aaa;transition:.3s}
 .prog-num.active{background:#E2136E;border-color:#E2136E;color:#fff}
@@ -19,74 +20,72 @@ body{min-height:100vh;background:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif
 .prog-label.active{color:#E2136E;font-weight:700}
 .prog-line{flex:1;height:2px;background:#ddd;margin-bottom:16px;transition:.3s}
 .prog-line.done{background:#E2136E}
-.card{width:100%;max-width:420px;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);margin:12px 16px 28px;overflow:hidden}
-.card-header{background:linear-gradient(135deg,#E2136E,#c40d5a);padding:22px 20px;text-align:center}
+.card{width:100%;max-width:440px;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);margin:12px 16px 28px;overflow:hidden}
+.card-header{background:linear-gradient(135deg,#E2136E,#c40d5a);padding:20px;text-align:center}
 .card-header h2{color:#fff;font-size:17px;font-weight:700}
 .card-header p{color:rgba(255,255,255,.8);font-size:12px;margin-top:3px}
-.card-body{padding:22px 22px 24px}
-.step-content{display:none}
-.step-content.active{display:block}
+.card-body{padding:20px}
+.step-content{display:none}.step-content.active{display:block}
 .field{margin-bottom:14px}
 .field label{font-size:11px;font-weight:700;color:#666;letter-spacing:.5px;display:block;margin-bottom:6px}
 .field input,.field select{width:100%;padding:13px 15px;border:1.5px solid #ddd;border-radius:10px;font-size:15px;color:#222;outline:none;background:#fafafa;transition:.2s}
-.field input:focus,.field select:focus{border-color:#E2136E;box-shadow:0 0 0 3px rgba(226,19,110,.12);background:#fff}
+.field input:focus,.field select:focus{border-color:#E2136E;background:#fff}
 .amount-block{background:#fff5f9;border:1.5px solid #fce4f0;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
-.amount-left .alabel{font-size:11px;color:#888;font-weight:600}
-.amount-left .aval{font-size:26px;font-weight:900;color:#E2136E}
+.aval{font-size:26px;font-weight:900;color:#E2136E}
+.alabel{font-size:11px;color:#888;font-weight:600}
 .plan-tag{background:#E2136E;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px}
-.number-box{background:#f7f7f7;border:1.5px solid #e0e0e0;border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:18px}
-.number-box .nb-num{font-size:21px;font-weight:900;color:#E2136E;letter-spacing:1px;flex:1;text-align:center}
+.number-box{background:#f7f7f7;border:1.5px solid #e0e0e0;border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px}
+.nb-num{font-size:21px;font-weight:900;color:#E2136E;letter-spacing:1px;flex:1;text-align:center}
 .copy-btn{background:none;border:1.5px solid #E2136E;color:#E2136E;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .copy-btn:hover{background:#E2136E;color:#fff}
-.step-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
-.step-num-badge{width:24px;height:24px;background:#E2136E;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+.step-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.snb{width:22px;height:22px;background:#E2136E;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:2px}
 .step-row p{font-size:13px;color:#444;line-height:1.5}
 .note{background:#fff8e1;border-left:3px solid #ffc107;border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#7a5800;line-height:1.5;margin-bottom:14px}
-.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,#E2136E,#c40d5a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(226,19,110,.35);transition:.2s}
+.note-info{background:#e3f2fd;border-left:3px solid #2196F3;border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#0d47a1;line-height:1.5;margin-bottom:14px}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,#E2136E,#c40d5a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(226,19,110,.35)}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed}
-.btn-back{background:none;border:none;color:#888;font-size:13px;cursor:pointer;margin-bottom:14px}
-.divider{height:1px;background:#f0f0f0;margin:16px 0}
-/* Waiting/scanning */
-.scan-wrap{text-align:center;padding:8px 0}
-.scan-icon-wrap{width:90px;height:90px;margin:0 auto 20px;position:relative}
-.scan-ring{position:absolute;inset:0;border:4px solid #fce4f0;border-top-color:#E2136E;border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.scan-center{position:absolute;inset:14px;background:#E2136E;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px}
-.timer-text{font-size:13px;color:#888;margin:6px 0 18px}
-.timer-text span{color:#E2136E;font-weight:800}
-/* Key received */
-.key-received{text-align:center;padding:8px 0}
-.key-icon{width:72px;height:72px;background:linear-gradient(135deg,#4CAF50,#2E7D32);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 16px rgba(76,175,80,.35);font-size:36px}
-.key-box{background:#e8f5e9;border:2px solid #4CAF50;border-radius:12px;padding:16px;margin:16px 0}
-.key-box .kl{font-size:11px;color:#4CAF50;font-weight:700;margin-bottom:6px}
-.key-box .kv{font-size:22px;font-weight:900;color:#2E7D32;letter-spacing:2px}
-.wa-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;text-decoration:none;width:100%;justify-content:center}
-.fail-icon{width:72px;height:72px;background:linear-gradient(135deg,#f44336,#c62828);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px}
+.btn-back{background:none;border:none;color:#888;font-size:13px;cursor:pointer;margin-bottom:14px;display:block}
+.divider{height:1px;background:#f0f0f0;margin:14px 0}
+/* Step 3 */
+.pending-wrap{text-align:center;padding:8px 0}
+.pending-icon{width:72px;height:72px;background:linear-gradient(135deg,#FF9800,#F57C00);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:32px}
+.ref-box{background:#f5f5f5;border-radius:10px;padding:12px;margin:14px 0;border:1px dashed #ddd}
+.ref-label{font-size:11px;color:#888;font-weight:600;margin-bottom:4px}
+.ref-val{font-size:16px;font-weight:900;color:#E2136E;letter-spacing:1px}
+/* Key ready */
+.key-received{text-align:center}
+.key-icon{width:72px;height:72px;background:linear-gradient(135deg,#4CAF50,#2E7D32);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:36px}
+.key-box{background:#e8f5e9;border:2px solid #4CAF50;border-radius:12px;padding:16px;margin:14px 0}
+.kl{font-size:11px;color:#4CAF50;font-weight:700;margin-bottom:6px}
+.kv{font-size:22px;font-weight:900;color:#2E7D32;letter-spacing:2px}
+.tv-success{background:#E8F5E9;border:2px solid #4CAF50;border-radius:12px;padding:14px;margin:12px 0;text-align:center}
+.wa-btn{display:flex;align-items:center;gap:8px;background:#25D366;color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;text-decoration:none;width:100%;justify-content:center}
 .footer{text-align:center;font-size:11px;color:#bbb;padding:0 0 24px}
 .footer a{color:#E2136E;text-decoration:none;font-weight:600}
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div>
     <div class="logo-text">🅱 bKash Payment</div>
-    <div class="logo-sub">A-TV Player — Instant Auto Key</div>
+    <div class="logo-sub">A-TV Player — Secure Payment</div>
   </div>
 </div>
+<div class="tv-notice" id="tvNotice">📺 TV Detected — Your TV will auto-start after payment!</div>
 
 <div class="progress-wrap">
   <div class="prog-step"><div class="prog-num active" id="pn1">1</div><div class="prog-label active" id="pl1">Your Info</div></div>
   <div class="prog-line" id="line1"></div>
-  <div class="prog-step"><div class="prog-num" id="pn2">2</div><div class="prog-label" id="pl2">Pay</div></div>
+  <div class="prog-step"><div class="prog-num" id="pn2">2</div><div class="prog-label" id="pl2">Payment</div></div>
   <div class="prog-line" id="line2"></div>
-  <div class="prog-step"><div class="prog-num" id="pn3">3</div><div class="prog-label" id="pl3">Key</div></div>
+  <div class="prog-step"><div class="prog-num" id="pn3">3</div><div class="prog-label" id="pl3">Done</div></div>
 </div>
 
 <div class="card">
   <div class="card-header">
     <h2 id="cardTitle">Your Information</h2>
-    <p id="cardSub">Tell us who you are before payment</p>
+    <p id="cardSub">Fill in your details to get started</p>
   </div>
   <div class="card-body">
 
@@ -107,7 +106,7 @@ body{min-height:100vh;background:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif
       <button class="btn-primary" onclick="goToStep2()">Continue →</button>
     </div>
 
-    <!-- STEP 2: Pay & auto-detect -->
+    <!-- STEP 2 -->
     <div class="step-content" id="step2">
       <button class="btn-back" onclick="goToStep1()">← Back</button>
       <div class="amount-block">
@@ -117,55 +116,61 @@ body{min-height:100vh;background:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif
         </div>
         <div class="plan-tag" id="planDisplay">—</div>
       </div>
-      <div class="step-row"><div class="step-num-badge">1</div><p>Open <strong>bKash app</strong> → Send Money to this number:</p></div>
+      <div class="step-row"><div class="snb">1</div><p>Open <strong>bKash app</strong> → Send Money to:</p></div>
       <div class="number-box">
         <span class="nb-num" id="bkashNumber">01349407692</span>
         <button class="copy-btn" onclick="copyNum()">Copy</button>
       </div>
-      <div class="step-row"><div class="step-num-badge">2</div><p>Send the <strong>exact amount</strong> shown above — no extra, no less</p></div>
-      <div class="step-row"><div class="step-num-badge">3</div><p>Click below — your key generates <strong>automatically</strong> within seconds, no need to enter Transaction ID!</p></div>
+      <div class="step-row"><div class="snb">2</div><p>Send <strong>exact amount ৳<span id="amountInStep">—</span></strong> — enter your name in Reference</p></div>
+      <div class="step-row"><div class="snb">3</div><p>Copy the <strong>Transaction ID (TrxID)</strong> from bKash SMS</p></div>
       <div class="divider"></div>
-      <div class="note">⚡ Fully automatic — we detect your payment instantly and generate your key. No manual approval needed!</div>
-      <button class="btn-primary" id="submitBtn" onclick="startPayment()">I've Sent the Money →</button>
+      <div class="note">⚠️ We never ask for your bKash PIN. Only your Transaction ID.</div>
+      <div class="field"><label>YOUR bKASH NUMBER (Sender)</label><input type="tel" id="senderNum" placeholder="01XXXXXXXXX" maxlength="11"/></div>
+      <div class="field">
+        <label>TRANSACTION ID (TrxID)</label>
+        <input type="text" id="trxId" placeholder="e.g. 8BX4T2K9PL" style="text-transform:uppercase;letter-spacing:1px;font-weight:700"/>
+      </div>
+      <div class="note-info" id="tvNoticeStep2" style="display:none">📺 <strong>TV Auto-Setup:</strong> After approval your TV will start automatically — no key entry needed!</div>
+      <button class="btn-primary" id="submitBtn" onclick="submitPayment()">Submit Payment Request</button>
     </div>
 
-    <!-- STEP 3: Waiting for auto-verification -->
+    <!-- STEP 3 -->
     <div class="step-content" id="step3">
-      <div id="scanningSection" class="scan-wrap">
-        <div class="scan-icon-wrap">
-          <div class="scan-ring"></div>
-          <div class="scan-center">⏳</div>
+      <div class="pending-wrap" id="pendingSection">
+        <div class="pending-icon">⏳</div>
+        <h3 style="font-size:17px;color:#222;margin-bottom:6px">Payment Submitted!</h3>
+        <p style="font-size:13px;color:#666;line-height:1.6">Waiting for admin approval.<br/>Usually approved within a few minutes.</p>
+        <div class="ref-box">
+          <div class="ref-label">PAYMENT REFERENCE ID</div>
+          <div class="ref-val" id="pidDisplay">—</div>
         </div>
-        <h3 style="font-size:18px;color:#222;margin-bottom:6px">Detecting Your Payment...</h3>
-        <p style="font-size:13px;color:#666;line-height:1.6">Please wait, this usually takes 5-15 seconds</p>
-        <div class="timer-text">Time remaining: <span id="timerCount">60</span>s</div>
+        <div id="tvWaitMsg" style="display:none;background:#E3F2FD;border-radius:10px;padding:12px;margin:10px 0;font-size:13px;color:#1565C0;font-weight:600">
+          📺 Keep your TV on this screen — it will auto-start when approved!
+        </div>
+        <p style="font-size:12px;color:#999;margin-top:8px">Your key will appear here automatically when approved</p>
       </div>
 
+      <!-- Key Ready -->
       <div id="keySection" style="display:none" class="key-received">
         <div class="key-icon">🔑</div>
-        <h3 style="color:#2E7D32;margin-bottom:6px">Payment Verified!</h3>
-        <p style="font-size:13px;color:#666;margin-bottom:8px">Your access key is ready:</p>
+        <h3 style="color:#2E7D32;margin-bottom:6px">Payment Approved!</h3>
         <div class="key-box">
           <div class="kl">YOUR A-TV ACCESS KEY</div>
           <div class="kv" id="keyDisplay">—</div>
         </div>
-        <p style="font-size:12px;color:#666;margin-bottom:12px">Open A-TV app → Enter this key → Press ENTER</p>
+        <div class="tv-success" id="tvSuccessMsg" style="display:none">
+          <div style="font-size:24px;margin-bottom:6px">📺</div>
+          <strong style="color:#2E7D32">Your TV is starting automatically!</strong>
+          <p style="font-size:12px;color:#666;margin-top:4px">No need to enter the key manually</p>
+        </div>
         <button onclick="copyKey()" style="width:100%;padding:11px;background:#1565C0;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">📋 Copy Key</button>
       </div>
 
-      <div id="failSection" style="display:none" class="scan-wrap">
-        <div class="fail-icon">✕</div>
-        <h3 style="color:#c62828;margin-bottom:6px">Payment Not Detected</h3>
-        <p style="font-size:13px;color:#666;line-height:1.6;margin-bottom:16px">We couldn't detect your payment within the time limit. If you've already paid, contact support with your details below.</p>
-        <button class="btn-primary" onclick="retryPayment()" style="margin-bottom:10px">Try Again</button>
-      </div>
-
-      <a id="waBtn" href="#" target="_blank" class="wa-btn">💬 Contact Support on WhatsApp</a>
+      <a id="waBtn" href="#" target="_blank" class="wa-btn">💬 Contact Support</a>
     </div>
 
   </div>
 </div>
-
 <div class="footer">Need help? <a id="footerWa" href="#">WhatsApp Support</a></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -181,23 +186,9 @@ const firebaseConfig = {
   appId:"1:745841216934:web:9a6c0f8d8d494ef22b5367"
 };
 
-// ════════════════════════════════════════
-//  SPV SERVICES API KEY — auto payment verify
-// ════════════════════════════════════════
-const SPV_API_KEY = "SPV-8D4HYP4Y-51VXMYBO";
-
-let db, userData={}, adminWa='8801731410341', verifyTimer=null, countdownTimer=null;
+let db, userData={}, adminWa='8801731410341', keyListener=null;
 const urlParams = new URLSearchParams(window.location.search);
 const tvDeviceId = urlParams.get('device');
-// If opened from TV QR, show a notice
-window.addEventListener('load', () => {
-  if (tvDeviceId) {
-    const notice = document.createElement('div');
-    notice.style.cssText = 'background:#E2136E;color:#fff;text-align:center;padding:10px;font-size:13px;font-weight:700;';
-    notice.textContent = '📺 TV detected — your TV will auto-start after payment!';
-    document.querySelector('.topbar').after(notice);
-  }
-});
 
 try {
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -213,6 +204,11 @@ try {
     if(snap.exists()) document.getElementById('bkashNumber').textContent = snap.val();
   });
 } catch(e) { console.warn(e); }
+
+// Show TV notice
+if(tvDeviceId) {
+  document.getElementById('tvNotice').style.display='block';
+}
 
 function getSelectedPlan() {
   const v = document.getElementById('planSelect').value.split('|');
@@ -232,9 +228,8 @@ function goToStep1() {
   ['step2','step3'].forEach(s=>document.getElementById(s).className='step-content');
   document.getElementById('step1').className='step-content active';
   document.getElementById('cardTitle').textContent='Your Information';
-  document.getElementById('cardSub').textContent='Tell us who you are before payment';
+  document.getElementById('cardSub').textContent='Fill in your details to get started';
   setProgress(1);
-  stopVerification();
 }
 
 function goToStep2() {
@@ -245,16 +240,18 @@ function goToStep2() {
   const {amount,plan,days}=getSelectedPlan();
   userData={name,whatsapp:wa,amount,plan,days};
   document.getElementById('amountDisplay').textContent=amount;
-  document.getElementById('planDisplay').textContent=plan+' Key';
+  document.getElementById('amountInStep').textContent=amount;
+  document.getElementById('planDisplay').textContent=plan;
+  if(tvDeviceId) document.getElementById('tvNoticeStep2').style.display='block';
   ['step1','step3'].forEach(s=>document.getElementById(s).className='step-content');
   document.getElementById('step2').className='step-content active';
   document.getElementById('cardTitle').textContent='bKash Payment';
-  document.getElementById('cardSub').textContent='Send money & we auto-detect it';
+  document.getElementById('cardSub').textContent='Send money & enter your TrxID';
   setProgress(2); window.scrollTo(0,0);
 }
 
 function copyNum() {
-  const num = document.getElementById('bkashNumber').textContent;
+  const num=document.getElementById('bkashNumber').textContent;
   navigator.clipboard.writeText(num).catch(()=>{});
   const b=document.querySelector('.copy-btn');
   b.textContent='Copied!';b.style.background='#E2136E';b.style.color='#fff';
@@ -262,138 +259,81 @@ function copyNum() {
 }
 
 function copyKey() {
-  const key=document.getElementById('keyDisplay').textContent;
-  navigator.clipboard.writeText(key).catch(()=>{});
-  alert('Key copied: '+key);
+  navigator.clipboard.writeText(document.getElementById('keyDisplay').textContent).catch(()=>{});
+  alert('Key copied!');
 }
 
 function genPaymentId() {
   return 'PAY-'+Array.from({length:8},()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('');
 }
-function genKey() {
-  const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  const seg=()=>Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join('');
-  return `ATVP-${seg()}-${seg()}-${seg()}`;
-}
 
-// ── SPV Auto Verification ──
-async function createSpvVerification(amount, timeout) {
-  const res = await fetch("https://firestore.googleapis.com/v1/projects/spv-services/databases/(default)/documents/verifications", {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ apiKey: SPV_API_KEY, amount: parseFloat(amount), timeout })
-  });
-  const data = await res.json();
-  return data.verificationId || data.fields?.verificationId?.stringValue;
-}
+function submitPayment() {
+  const sender=document.getElementById('senderNum').value.trim();
+  const trxId=document.getElementById('trxId').value.trim().toUpperCase();
+  if(!sender||sender.length<11){alert('Enter your bKash sender number.');return;}
+  if(!trxId||trxId.length<5){alert('Enter a valid Transaction ID (TrxID).');return;}
 
-async function checkSpvVerification(verificationId) {
-  const res = await fetch(`https://firestore.googleapis.com/v1/projects/spv-services/databases/(default)/documents/verifications/${verificationId}`);
-  return await res.json();
-}
+  const btn=document.getElementById('submitBtn');
+  btn.textContent='Submitting...';btn.disabled=true;
 
-function startPayment() {
-  const paymentId = genPaymentId();
-  const {amount} = userData;
-
+  const paymentId=genPaymentId();
   let expiry='No Limit';
   if(userData.days>0){
-    const d=new Date(); d.setDate(d.getDate()+userData.days);
+    const d=new Date();d.setDate(d.getDate()+userData.days);
     expiry=d.toISOString().split('T')[0];
   }
 
-  ['step1','step2'].forEach(s=>document.getElementById(s).className='step-content');
-  document.getElementById('step3').className='step-content active';
-  document.getElementById('cardTitle').textContent='Verifying Payment';
-  document.getElementById('cardSub').textContent='Auto-detecting your transaction';
-  setProgress(3); window.scrollTo(0,0);
+  const payload={
+    name:userData.name, whatsapp:userData.whatsapp,
+    plan:userData.plan, amount:userData.amount,
+    days:userData.days, expiry,
+    senderNumber:sender, trxId,
+    tvDeviceId: tvDeviceId||null,
+    status:'pending', key:null,
+    timestamp:Date.now()
+  };
 
-  document.getElementById('scanningSection').style.display='block';
-  document.getElementById('keySection').style.display='none';
-  document.getElementById('failSection').style.display='none';
-
-  let timeLeft = 60;
-  document.getElementById('timerCount').textContent = timeLeft;
-  countdownTimer = setInterval(() => {
-    timeLeft--;
-    document.getElementById('timerCount').textContent = timeLeft;
-    if(timeLeft<=0) clearInterval(countdownTimer);
-  }, 1000);
-
-  createSpvVerification(amount, 60).then(verificationId => {
-    if(!verificationId) { showFail(); return; }
-
-    verifyTimer = setInterval(async () => {
-      try {
-        const result = await checkSpvVerification(verificationId);
-        const status = result.fields?.status?.stringValue || result.status;
-
-        if (status === 'verified') {
-          stopVerification();
-          const key = genKey();
-          const keyData = {
-            user: userData.name, phone: userData.whatsapp,
-            expiry, status:'active', deviceId:'',
-            createdAt: new Date().toISOString().split('T')[0]
-          };
-          db.ref('keys/'+key).set(keyData)
-            .then(()=> db.ref('payments/'+paymentId).set({
-              name:userData.name, whatsapp:userData.whatsapp, plan:userData.plan,
-              amount, expiry, status:'approved', key,
-              method:'auto-spv', timestamp:Date.now()
-            }))
-            .then(()=> showKey(key));
-        } else if (status && status !== 'pending') {
-          stopVerification(); showFail();
-        }
-      } catch(e) { console.warn(e); }
-    }, 3000);
-
-    setTimeout(() => {
-      if(verifyTimer) { stopVerification(); showFail(); }
-    }, 60000);
-  }).catch(()=> showFail());
-}
-
-function stopVerification() {
-  if(verifyTimer) { clearInterval(verifyTimer); verifyTimer=null; }
-  if(countdownTimer) { clearInterval(countdownTimer); countdownTimer=null; }
-}
-
-function showKey(key) {
-  document.getElementById('scanningSection').style.display='none';
-  document.getElementById('keySection').style.display='block';
-  document.getElementById('keyDisplay').textContent = key;
-  document.getElementById('cardTitle').textContent = '🎉 Key Ready!';
-  document.getElementById('cardSub').textContent = 'Your IPTV key is ready to use';
-
-  // If opened from TV QR scan, push key to pending_devices so TV auto-logs in
-  const urlParams = new URLSearchParams(window.location.search);
-  const deviceId = urlParams.get('device');
-  if (deviceId && db) {
-    db.ref('pending_devices/' + deviceId).set({
-      key: key,
-      name: userData.name,
-      expiry: (() => {
-        if (userData.days === 0) return 'No Limit';
-        const d = new Date(); d.setDate(d.getDate() + userData.days);
-        return d.toISOString().split('T')[0];
-      })(),
-      timestamp: Date.now()
-    });
+  function showStep3() {
+    document.getElementById('pidDisplay').textContent=paymentId;
+    document.getElementById('waBtn').href=`https://wa.me/${adminWa}?text=${encodeURIComponent('Hi, I submitted bKash payment for A-TV. Ref: '+paymentId+' | TrxID: '+trxId)}`;
+    if(tvDeviceId) document.getElementById('tvWaitMsg').style.display='block';
+    ['step1','step2'].forEach(s=>document.getElementById(s).className='step-content');
+    document.getElementById('step3').className='step-content active';
+    document.getElementById('cardTitle').textContent='Payment Submitted';
+    document.getElementById('cardSub').textContent='Waiting for approval...';
+    setProgress(3); btn.textContent='Submit Payment Request';btn.disabled=false;
+    window.scrollTo(0,0);
+    listenForKey(paymentId);
   }
+
+  if(db) {
+    db.ref('payments/'+paymentId).set(payload)
+      .then(showStep3)
+      .catch(e=>{alert('Error: '+e.message);btn.textContent='Submit Payment Request';btn.disabled=false;});
+  } else { setTimeout(showStep3,800); }
 }
 
-function showFail() {
-  document.getElementById('scanningSection').style.display='none';
-  document.getElementById('failSection').style.display='block';
-  document.getElementById('cardTitle').textContent = 'Verification Failed';
-  document.getElementById('cardSub').textContent = 'Payment not detected';
-}
+function listenForKey(paymentId) {
+  if(!db) return;
+  db.ref('payments/'+paymentId).on('value', snap => {
+    if(!snap.exists()) return;
+    const data=snap.val();
+    if(data.status==='approved' && data.key) {
+      document.getElementById('pendingSection').style.display='none';
+      document.getElementById('keySection').style.display='block';
+      document.getElementById('keyDisplay').textContent=data.key;
+      document.getElementById('cardTitle').textContent='🎉 Approved!';
+      document.getElementById('cardSub').textContent='Your key is ready';
 
-function retryPayment() {
-  document.getElementById('failSection').style.display='none';
-  document.getElementById('scanningSection').style.display='block';
-  startPayment();
+      if(tvDeviceId) {
+        document.getElementById('tvSuccessMsg').style.display='block';
+        // Push key to pending_devices for TV auto-login
+        db.ref('pending_devices/'+tvDeviceId).set({
+          key:data.key, name:data.name, expiry:data.expiry, timestamp:Date.now()
+        });
+      }
+    }
+  });
 }
 </script>
 </body>
